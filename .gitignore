@@ -1,0 +1,32 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+*.so
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Local credentials and environment files
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+
+# Raw/local data and generated private runtime metadata
+patent_rawdata.csv
+runs/*/codex_proxy_health.json
+runs/*/raptor_tree.pkl
+runs/*_backup_*
+runs/*smoke*
+runs/v2_pause_at_2240.log
+
+# Intermediate early runs kept locally only
+runs/patent_raptor_full_20260527_135133/
+runs/patent_raptor_full_20260527_135419/
+runs/patent_raptor_full_20260527_141141/

@@ -19,6 +19,38 @@ V2 is the main experiment version.
 - `bm25_leaf`
 - `dpr_leaf`
 
+## What V1 Did Not Explain Well
+
+V1 showed that RAPTOR and BM25 behave differently, but several questions remained:
+
+- The QA set mixed broad synthesis questions and narrow patent lookup questions.
+- There was no dense retrieval baseline.
+- BM25 all-node retrieval was useful for lexical overlap analysis, but it did not answer whether a neural dense retriever could compete.
+- The report gave method scores, but did not clearly show which answer was best for each individual question.
+
+## V2 Improvements
+
+V2 was built to address those gaps:
+
+- Splits QA into `global` and `local` questions.
+- Adds `dpr_leaf` as a dense retrieval baseline.
+- Keeps `bm25_leaf` as the lexical baseline.
+- Uses GPT-5.5 to judge each method and select a best method per QA.
+- Adds source overlays so the retrieved answer path can be inspected in the RAPTOR tree visualization.
+
+## Analysis Process
+
+The V2 process was:
+
+1. Reuse the same 200 sampled patents and RAPTOR tree from V1.
+2. Generate 5 global questions from parent summary/source patent groups.
+3. Generate 5 local questions from individual patent leaf summaries.
+4. Retrieve context with Traverse Tree, Collapsed Tree, BM25 leaf, and DPR leaf.
+5. Generate reader answers from the retrieved context.
+6. Score each answer with GPT-5.5 against a pseudo-gold reference answer.
+7. Ask GPT-5.5 to rank the four method answers for each QA item.
+8. Render the final HTML report and source path overlays.
+
 ## Headline Metrics
 
 Average answer scores:
@@ -51,3 +83,10 @@ Retrieval metrics on 200 title/AI-summary queries:
 ## Interpretation
 
 V2 is better suited as the final report because it tests both global and local retrieval behavior and adds DPR as a neural retrieval baseline. DPR underperformed in this corpus, while RAPTOR tree methods were stronger for synthesis-heavy questions.
+
+The main findings are:
+
+- For global synthesis, `traverse_tree` worked best because top-down traversal retained high-level summary structure.
+- For local lookup, `collapsed_tree` was more stable because it could choose directly relevant leaf or summary nodes from the flattened tree.
+- `dpr_leaf` did not outperform RAPTOR or BM25 on this dataset, likely because the patent questions often contain exact technical terms and patent-specific phrasing.
+- `bm25_leaf` remained useful for rare-term queries, but it was less robust for synthesis questions.

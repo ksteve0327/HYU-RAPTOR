@@ -415,15 +415,6 @@ svg {{
   stroke-dasharray: none;
   stroke-width: 3.4;
 }}
-.node.expected circle {{
-  stroke: #dc2626;
-  stroke-dasharray: none;
-  stroke-width: 3.4;
-}}
-.node.source.expected circle {{
-  stroke: #16a34a;
-  stroke-width: 4;
-}}
 .node.match circle {{
   stroke: #dc2626;
   stroke-width: 3;
@@ -558,7 +549,6 @@ svg {{
   font-size: 12px;
 }}
 .badge.source {{ border-color: #111827; color: #111827; }}
-.badge.expected {{ border-color: #dc2626; color: #991b1b; }}
 .outline-legend {{
   display: grid;
   gap: 7px;
@@ -580,8 +570,6 @@ svg {{
   flex: 0 0 auto;
 }}
 .outline-swatch.source {{ border-color: #111827; }}
-.outline-swatch.expected {{ border-color: #dc2626; }}
-.outline-swatch.both {{ border-color: #16a34a; }}
 .outline-swatch.path {{
   border-color: #475569;
   border-style: dashed;
@@ -651,7 +639,18 @@ const qaSources = DATA.qa_sources || {{ qa_items: [] }};
 const byId = new Map(nodes.map(node => [node.id, node]));
 const rootId = "__root__";
 const roots = meta.root_nodes.slice();
-const methodOrder = ["traverse_tree", "collapsed_tree", "bm25_leaf", "dpr_leaf"];
+const methodOrder = [
+  "bm25_without_raptor",
+  "bm25_with_raptor",
+  "dense_bge_m3_without_raptor",
+  "dense_bge_m3_with_raptor",
+  "dpr_without_raptor",
+  "dpr_with_raptor",
+  "traverse_tree",
+  "collapsed_tree",
+  "bm25_leaf",
+  "dpr_leaf"
+];
 const colors = [
   "#2563eb", "#059669", "#d97706", "#dc2626", "#7c3aed", "#0891b2",
   "#4f46e5", "#65a30d", "#be123c", "#0f766e", "#9333ea", "#b45309"
@@ -661,7 +660,7 @@ const colorByCategory = new Map(categoryKeys.map((key, index) => [key, colors[in
 let collapsed = new Set();
 let selectedId = roots[0] || "";
 let activeQaIndex = qaSources.qa_items.length ? 0 : null;
-let activeMethod = "traverse_tree";
+let activeMethod = methodOrder[0];
 let currentHighlights = emptyHighlights();
 let zoomLevel = 1;
 const minZoom = 0.35;
@@ -736,7 +735,6 @@ function setZoomAtPoint(nextZoom, clientX, clientY) {{
 function emptyHighlights() {{
   return {{
     source: new Set(),
-    expected: new Set(),
     path: new Set(),
     rankById: new Map(),
     sourceById: new Map()
@@ -766,9 +764,6 @@ function activeSourceSets() {{
 
   for (const nodeIndex of method.source_node_indices || []) {{
     highlights.source.add(String(nodeIndex));
-  }}
-  for (const nodeIndex of qa.expected_node_indices || []) {{
-    highlights.expected.add(String(nodeIndex));
   }}
   for (const nodeIndex of method.path_node_indices || []) {{
     highlights.path.add(String(nodeIndex));
@@ -827,7 +822,7 @@ function visibleChildren(node, query, mode) {{
   for (const childId of node.children) {{
     const child = byId.get(childId);
     if (!child) continue;
-    const isQaVisibleLeaf = currentHighlights.source.has(childId) || currentHighlights.expected.has(childId);
+    const isQaVisibleLeaf = currentHighlights.source.has(childId);
     if (mode === "summary" && child.layer === 0 && !query && !isQaVisibleLeaf) continue;
     if (query && !descendantMatches(childId, query)) continue;
     children.push(childId);
@@ -932,11 +927,10 @@ function render() {{
     const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
     const matches = nodeMatches(node, layout.query);
     const isSource = currentHighlights.source.has(id);
-    const isExpected = currentHighlights.expected.has(id);
     const isQaPath = currentHighlights.path.has(id);
     group.setAttribute(
       "class",
-      `node ${{node.node_type}}${{isQaPath ? " qa-path" : ""}}${{isSource ? " source" : ""}}${{isExpected ? " expected" : ""}}${{id === selectedId ? " selected" : ""}}${{matches ? " match" : ""}}`
+      `node ${{node.node_type}}${{isQaPath ? " qa-path" : ""}}${{isSource ? " source" : ""}}${{id === selectedId ? " selected" : ""}}${{matches ? " match" : ""}}`
     );
     group.setAttribute("transform", `translate(${{pos.x}},${{pos.y}})`);
     group.setAttribute("data-id", id);
@@ -1033,9 +1027,7 @@ function renderLegend() {{
     <h3>Node Outline</h3>
     <div class="outline-legend">
       <div class="outline-row"><span class="outline-swatch source"></span><span>Retrieved source context for the selected QA/method</span></div>
-      <div class="outline-row"><span class="outline-swatch expected"></span><span>Expected answer patent leaf</span></div>
-      <div class="outline-row"><span class="outline-swatch both"></span><span>Both retrieved source and expected answer</span></div>
-      <div class="outline-row"><span class="outline-swatch path"></span><span>On the highlighted source/answer tree path</span></div>
+      <div class="outline-row"><span class="outline-swatch path"></span><span>On the highlighted source tree path</span></div>
     </div>
   `;
 }}
@@ -1109,10 +1101,8 @@ function renderQaSummary() {{
     return;
   }}
   const sourceCount = (method.source_node_indices || []).length;
-  const expectedCount = (qa.expected_node_indices || []).length;
   const sourceList = (method.source_nodes || []).slice(0, 8).map(source => {{
-    const expected = source.contains_expected ? "yes" : "no";
-    return `#${{source.node_index}} L${{source.layer}} r${{source.rank}} expected=${{expected}}`;
+    return `#${{source.node_index}} L${{source.layer}} r${{source.rank}}`;
   }}).join("<br>");
   target.innerHTML = `
     <strong>Question type</strong><br>${{escapeHtml(qa.question_type || "")}}<br><br>
@@ -1120,9 +1110,8 @@ function renderQaSummary() {{
     <strong>Method</strong>: ${{escapeHtml(activeMethod)}} |
     <strong>score</strong>: ${{escapeHtml(method.judge_score || "-")}} |
     <strong>hit/rank</strong>: ${{escapeHtml(method.hit || "-")}}/${{escapeHtml(method.rank || "-")}}<br>
-    <strong>source nodes</strong>: ${{sourceCount}} |
-    <strong>expected leaves</strong>: ${{expectedCount}}<br>
-    <span class="subtitle">Fill color = category. Black outline = retrieved context source. Red outline = expected answer patent leaf. Green outline = both. Dashed outline = highlighted path.</span><br><br>
+    <strong>source nodes</strong>: ${{sourceCount}}<br>
+    <span class="subtitle">Fill color = category. Black outline = retrieved context source. Dashed outline = highlighted source path.</span><br><br>
     ${{sourceList ? `<strong>Top source nodes</strong><br>${{sourceList}}` : ""}}
   `;
 }}
@@ -1167,10 +1156,6 @@ function renderDetails(node) {{
   const badges = [];
   if (source) {{
     badges.push(`<span class="badge source">QA source rank ${{escapeHtml(source.rank)}}</span>`);
-    if (source.contains_expected) badges.push(`<span class="badge source">contains expected patent</span>`);
-  }}
-  if (highlights.expected.has(nodeId)) {{
-    badges.push(`<span class="badge expected">expected answer patent leaf</span>`);
   }}
   const leafSamples = (node.leaf_samples || []).map(leaf => `
     <div class="leaf-item">
@@ -1283,6 +1268,19 @@ renderDetails(byId.get(selectedId));
     return template.replace("__TREE_DATA__", payload_json)
 
 
+def remove_expected_annotations(qa_sources: Dict) -> Dict:
+    """Keep the overlay focused on retrieved source nodes, matching RAPTOR's visual framing."""
+    if not isinstance(qa_sources, dict):
+        return qa_sources
+    for qa_item in qa_sources.get("qa_items", []) or []:
+        qa_item.pop("expected_node_indices", None)
+        qa_item.pop("expected_patent_ids", None)
+        for method in (qa_item.get("methods") or {}).values():
+            for source in method.get("source_nodes") or []:
+                source.pop("contains_expected", None)
+    return qa_sources
+
+
 def update_report_link(report_html: Path, visualization_html: Path) -> None:
     if not report_html.exists():
         return
@@ -1325,7 +1323,9 @@ def main() -> None:
 
     payload = build_tree_payload(tree)
     if args.qa_sources_json:
-        payload["qa_sources"] = json.loads(args.qa_sources_json.read_text(encoding="utf-8"))
+        payload["qa_sources"] = remove_expected_annotations(
+            json.loads(args.qa_sources_json.read_text(encoding="utf-8"))
+        )
     args.output_html.parent.mkdir(parents=True, exist_ok=True)
     args.output_html.write_text(html_template(payload), encoding="utf-8")
 

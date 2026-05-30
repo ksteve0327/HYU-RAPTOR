@@ -2,7 +2,7 @@
 
 This repository contains a patent-domain RAPTOR implementation and comparison report.
 
-The main version is **V2**. V1 is kept as the first baseline so the repository history shows how the experiment evolved from a basic RAPTOR/BM25 comparison into a Global/Local QA evaluation with DPR and hybrid LLM judging.
+The main version is **V3**. V1 and V2 are kept as baselines so the repository history shows how the experiment evolved from a basic RAPTOR/BM25 comparison into Global/Local QA, dense retrieval, and a paper-aligned with/without RAPTOR evaluation.
 
 ## Experiment Goal
 
@@ -22,7 +22,7 @@ The raw `patent_rawdata.csv` is intentionally excluded from git.
 The implemented pipeline follows this flow:
 
 1. Sample patent summaries by middle category.
-2. Embed patent summaries with `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`.
+2. Embed patent summaries with the configured multilingual embedding model.
 3. Build a RAPTOR tree with hard K-means clustering.
 4. Summarize child nodes into parent summary nodes through `codex-proxy`.
 5. Retrieve context using multiple methods.
@@ -36,8 +36,7 @@ The visualization shows:
 - Leaf patent IDs.
 - Summary node text.
 - Retrieved source nodes per QA.
-- Expected answer leaf paths.
-- Method-specific overlays for comparison.
+- Retrieved source nodes and method-specific overlays for comparison.
 
 ## V1 Baseline
 
@@ -159,17 +158,54 @@ V2 artifacts:
 - `runs/patent_raptor_v2_20260527_221004/tree_visualization.html`
 - `versions/v2/README.md`
 
+## V3 Main Version
+
+V3 changes the comparison to match the RAPTOR paper's controlled setup more closely: each retriever is evaluated **without RAPTOR** on leaf patents and **with RAPTOR** on the flattened full tree.
+
+Main V3 methods:
+
+- `bm25_without_raptor`
+- `bm25_with_raptor`
+- `dense_bge_m3_without_raptor`
+- `dense_bge_m3_with_raptor`
+
+Optional auxiliary methods:
+
+- `dpr_without_raptor`
+- `dpr_with_raptor`
+
+V3 design choices:
+
+- The paper's DPR baseline is treated as a dense retriever concept; this patent corpus is Korean/English mixed, so the main dense retriever is `BAAI/bge-m3`.
+- Meta DPR remains available only as a V2 continuity baseline.
+- `traverse_tree` is not part of the V3 main table.
+- Metrics are split into Global and Local QA tables with `Accuracy`, `Recall@k`, `F1@k`, and `Avg Judge Score`.
+- MRR is still written to raw CSV for diagnostics but is not a V3 main report metric.
+- Appendix E is strengthened with child-text faithfulness audit, optional summary repair, and propagation checking.
+- BM25 analysis remains because patent documents often reward rare exact technical terms.
+
+V3 artifacts:
+
+- `runs/patent_raptor_v3_<timestamp>/report.html`
+- `runs/patent_raptor_v3_<timestamp>/report_print.html`
+- `runs/patent_raptor_v3_<timestamp>/report_compact_print.html`
+- `runs/patent_raptor_v3_<timestamp>/tree_visualization.html`
+- `runs/patent_raptor_v3_<timestamp>/retrieval_visualization.html`
+- `versions/v3/README.md`
+
 ## Implementation
 
 The experiment code includes:
 
 - Hard K-means RAPTOR tree building.
-- Structured retrieval helpers for Traverse Tree and Collapsed Tree.
-- BM25 leaf baseline.
-- DPR leaf baseline.
+- Structured retrieval helpers for Traverse Tree, Collapsed Tree, and V3 with/without RAPTOR evaluation.
+- BM25 leaf and all-node baselines.
+- BGE-M3 dense leaf and all-node baselines.
+- Optional DPR leaf and all-node baselines.
 - Codex proxy adapter for OpenAI-compatible local LLM calls.
+- GPT-5.5 faithfulness audit and summary repair for Appendix E.
 - Progress reporter with elapsed time, rolling ETA, and expected end time.
-- HTML report and tree/source overlay visualization generation.
+- HTML report, print reports, tree visualization, and retrieval-specific visualization generation.
 
 ## Run
 
@@ -183,17 +219,22 @@ Run a dependency-light smoke test:
 
 ```bash
 python scripts/run_patent_raptor_experiment.py \
+  --experiment-version v3 \
   --smoke \
   --skip-llm \
   --embedding-backend hash \
+  --include-dpr-baseline \
   --dpr-backend hash
 ```
 
-Run a V2 experiment using an existing V1 tree:
+Run a V3 full experiment:
 
 ```bash
 python scripts/run_patent_raptor_experiment.py \
-  --reuse-run-dir runs/patent_raptor_full_20260527_144357 \
+  --experiment-version v3 \
+  --embedding-backend sentence-transformers \
+  --dense-model BAAI/bge-m3 \
+  --include-dpr-baseline \
   --progress-interval-seconds 60
 ```
 
@@ -212,3 +253,4 @@ Only reproducible code, report artifacts, sampled JSONL data, and evaluation out
 
 - V1: RAPTOR Traverse/Collapsed Tree vs BM25 comparison on 20 synthetic QA items.
 - V2: Global/Local QA, DPR baseline, four-method answer comparison, and GPT-5.5 hybrid best-method judging.
+- V3: Paper-aligned with/without RAPTOR comparison, BGE-M3 dense retrieval, Global/Local quantitative tables, retrieval-specific visualization, and Appendix E audit/repair.

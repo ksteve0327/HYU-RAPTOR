@@ -1,0 +1,982 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RAPTOR Patent Experiment Report - Presentation</title>
+<style>
+@page { size: 13.333in 7.5in; margin: 0; }
+* { box-sizing: border-box; }
+html { background: #0f172a; color: #111827; }
+body {
+  margin: 0;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: #0f172a;
+}
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(15, 23, 42, .92);
+  backdrop-filter: blur(12px);
+}
+.toolbar button,
+.toolbar a {
+  border: 1px solid rgba(148, 163, 184, .45);
+  border-radius: 999px;
+  padding: 7px 13px;
+  background: #f8fafc;
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 0 40px;
+}
+.slide {
+  position: relative;
+  width: min(1280px, calc(100vw - 48px));
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #f8fafc;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .35);
+  page-break-after: always;
+  break-after: page;
+}
+.slide-inner {
+  position: absolute;
+  inset: 0;
+  padding: 54px 64px 46px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.slide::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 10px;
+  background: linear-gradient(90deg, #2563eb, #059669, #d97706);
+}
+.slide-title {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+  align-items: start;
+}
+h1, h2, h3, p { margin: 0; }
+h1 {
+  max-width: 900px;
+  font-size: 56px;
+  line-height: 1.03;
+  letter-spacing: 0;
+}
+h2 {
+  font-size: 36px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+h3 {
+  font-size: 20px;
+  line-height: 1.18;
+}
+.eyebrow {
+  color: #2563eb;
+  font-size: 15px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.subtitle {
+  max-width: 900px;
+  color: #475569;
+  font-size: 22px;
+  line-height: 1.45;
+}
+.small {
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 700;
+}
+.grid {
+  display: grid;
+  gap: 16px;
+}
+.grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.card {
+  border: 1px solid #d8e1ef;
+  border-radius: 14px;
+  background: #fff;
+  padding: 18px;
+}
+.card strong {
+  display: block;
+  margin-bottom: 6px;
+  color: #0f172a;
+  font-size: 18px;
+}
+.metric-card strong {
+  color: #475569;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+.metric-card .value {
+  margin-top: 6px;
+  color: #0f172a;
+  font-size: 36px;
+  font-weight: 850;
+  line-height: 1;
+}
+.metric-card .note {
+  margin-top: 8px;
+  color: #64748b;
+  font-size: 14px;
+  line-height: 1.35;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 14px;
+}
+th, td {
+  border: 1px solid #d8e1ef;
+  padding: 9px 10px;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: #eaf0ff;
+  color: #0f172a;
+  font-weight: 800;
+}
+.metric-table td:nth-child(n+2),
+.metric-table th:nth-child(n+2) {
+  text-align: right;
+  white-space: nowrap;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 230px 1fr 72px;
+  gap: 12px;
+  align-items: center;
+  margin: 10px 0;
+  font-size: 15px;
+}
+.bar-track {
+  height: 18px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  overflow: hidden;
+}
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2563eb, #059669);
+}
+.delta-table th:nth-child(1), .delta-table td:nth-child(1) { width: 16%; }
+.delta-table th:nth-child(2), .delta-table td:nth-child(2) { width: 18%; }
+.delta-table th:nth-child(3), .delta-table td:nth-child(3) { width: 18%; }
+.delta-table th:nth-child(4), .delta-table td:nth-child(4) { width: 13%; white-space: nowrap; }
+.delta-table th:nth-child(5), .delta-table td:nth-child(5) { width: 13%; white-space: nowrap; }
+.split-table {
+  table-layout: fixed;
+  font-size: 13px;
+}
+.split-table th:nth-child(1), .split-table td:nth-child(1) { width: 13%; }
+.split-table th:nth-child(2), .split-table td:nth-child(2),
+.split-table th:nth-child(3), .split-table td:nth-child(3),
+.split-table th:nth-child(4), .split-table td:nth-child(4),
+.split-table th:nth-child(5), .split-table td:nth-child(5) {
+  width: 12%;
+  text-align: right;
+  white-space: nowrap;
+}
+.split-table th:nth-child(6), .split-table td:nth-child(6) {
+  width: 39%;
+}
+.win-table {
+  table-layout: fixed;
+  font-size: 13px;
+}
+.win-table th:nth-child(1), .win-table td:nth-child(1) { width: 8%; }
+.win-table th:nth-child(2), .win-table td:nth-child(2) { width: 10%; }
+.win-table th:nth-child(3), .win-table td:nth-child(3) { width: 14%; }
+.win-table th:nth-child(4), .win-table td:nth-child(4) { width: 15%; }
+.win-table th:nth-child(5), .win-table td:nth-child(5) { width: 18%; }
+.win-table th:nth-child(6), .win-table td:nth-child(6) { width: 35%; }
+.semi-lines span {
+  display: block;
+  line-height: 1.35;
+  margin-bottom: 3px;
+}
+.pill {
+  display: inline-block;
+  margin: 0 5px 5px 0;
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+}
+.claim {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 13px;
+  align-items: start;
+  padding: 15px;
+  border: 1px solid #d8e1ef;
+  border-radius: 14px;
+  background: #fff;
+}
+.claim .num {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 999px;
+  background: #0f172a;
+  color: #fff;
+  font-weight: 850;
+}
+.mini-tree {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #d8e1ef;
+  border-radius: 14px;
+  background:
+    linear-gradient(90deg, rgba(100, 116, 139, .10) 1px, transparent 1px),
+    linear-gradient(rgba(100, 116, 139, .08) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+.tree-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  color: #475569;
+  font-size: 13px;
+}
+.legend-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 4px;
+  border-radius: 999px;
+}
+.source-list {
+  display: grid;
+  gap: 7px;
+}
+.source-item {
+  border: 1px solid #d8e1ef;
+  border-radius: 12px;
+  background: #fff;
+  padding: 8px 10px;
+  font-size: 12.4px;
+  line-height: 1.35;
+}
+.source-item strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #0f172a;
+}
+.answer-box {
+  border: 1px solid #cbd5e1;
+  border-left: 5px solid #2563eb;
+  border-radius: 14px;
+  background: #fff;
+  padding: 11px 13px;
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.foot {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  color: #94a3b8;
+  font-size: 12px;
+}
+.visual-summary {
+  font-size: 13px;
+}
+.visual-summary th:nth-child(1), .visual-summary td:nth-child(1) { width: 8%; }
+.visual-summary th:nth-child(2), .visual-summary td:nth-child(2) { width: 25%; }
+.visual-summary th:nth-child(3), .visual-summary td:nth-child(3) { width: 24%; }
+@media print {
+  html, body { background: #fff; }
+  .toolbar { display: none; }
+  .deck { display: block; padding: 0; }
+  .slide {
+    width: 13.333in;
+    height: 7.5in;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
+</style>
+</head><body>
+<div class="toolbar"><a href="report_compact_print.html">Compact print</a><a href="report.html">Full report</a><button type="button" onclick="window.print()">Print slides</button></div>
+<main class="deck">
+
+<section class="slide title-slide" id="slide-1">
+  <div class="slide-inner">
+    <div class="eyebrow">RAPTOR Patent Experiment</div>
+    <h1>V3: with/without RAPTOR 비교와 특허 QA 성능 분석</h1>
+    <p class="subtitle">특허 요약 200건을 대상으로 BM25와 BGE-M3 dense retrieval을 leaf-only와 RAPTOR all-node 조건에서 비교한 발표용 요약입니다.</p>
+    <div class="grid four">
+      <div class="card metric-card"><strong>Dataset</strong><div class="value">200</div><div class="note">AA 50, AB 50, AC 50, AD 50</div></div>
+      <div class="card metric-card"><strong>Main design</strong><div class="value">V3</div><div class="note">with vs without RAPTOR</div></div>
+      <div class="card metric-card"><strong>LLM</strong><div class="value">gpt-5.5</div><div class="note">reader / judge</div></div>
+      <div class="card metric-card"><strong>Runtime</strong><div class="value">1h 6m 2s</div><div class="note">recorded full run</div></div>
+    </div>
+    <div class="foot"><span>report_presentation.html</span><span>01</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Design</div>
+        <h2>실험 설계: leaf-only와 RAPTOR all-node를 분리 비교</h2>
+      </div>
+      <div class="kicker">#02</div>
+    </div>
+
+            <div class="grid two">
+              <div class="card">
+                <strong>Question set</strong>
+                <p class="subtitle" style="font-size:20px;">Global 5개 + Local 5개. 각 QA는 동일한 reference answer, 동일 reader prompt, 동일 max context 조건으로 평가했습니다.</p>
+              </div>
+              <div class="card">
+                <strong>Retrieval design</strong>
+                <p class="subtitle" style="font-size:20px;">BM25와 BGE-M3를 각각 without RAPTOR(leaf only)와 with RAPTOR(all summary+leaf nodes)로 비교했습니다.</p>
+              </div>
+            </div>
+            <div class="grid four">
+              <div class='card'><strong>BM25 without RAPTOR</strong><p class='small'>leaf only</p></div><div class='card'><strong>BM25 with RAPTOR</strong><p class='small'>all nodes</p></div><div class='card'><strong>BGE-M3 without RAPTOR</strong><p class='small'>leaf only</p></div><div class='card'><strong>BGE-M3 with RAPTOR</strong><p class='small'>all nodes</p></div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>02</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Metric</div>
+        <h2>Core metrics: 최종 QA 성능 중심</h2>
+      </div>
+      <div class="kicker">#03</div>
+    </div>
+
+            <div class="grid two" style="grid-template-columns:1fr 1fr;">
+              <div><table class='metric-table'><thead><tr><th>Method</th><th>Answer F1</th><th>Answer Recall</th><th>Accuracy</th><th>Avg Judge</th><th>Best count</th></tr></thead><tbody><tr><td>BM25 without RAPTOR</td><td>0.250</td><td>0.297</td><td>0.500</td><td>2.700</td><td>1</td></tr><tr><td>BM25 with RAPTOR</td><td>0.405</td><td>0.505</td><td>0.900</td><td>4.600</td><td>7</td></tr><tr><td>BGE-M3 without RAPTOR</td><td>0.430</td><td>0.508</td><td>0.900</td><td>4.500</td><td></td></tr><tr><td>BGE-M3 with RAPTOR</td><td>0.428</td><td>0.535</td><td>0.800</td><td>4.700</td><td>2</td></tr></tbody></table></div>
+              <div>
+                <div class="card metric-card"><strong>Best Answer F1</strong><div class="value">BGE-M3 without RAPTOR</div><div class="note">0.430</div></div>
+                <div style="height:16px"></div>
+                <div class="card metric-card"><strong>Best judge score</strong><div class="value">BGE-M3 with RAPTOR</div><div class="note">4.70 / 5</div></div>
+              </div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>03</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-4">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Ranking</div>
+        <h2>Answer F1 ranking</h2>
+      </div>
+      <div class="kicker">#04</div>
+    </div>
+
+            <div class="card">
+              <strong>Paper-style answer metric</strong>
+              <p class="small">RAPTOR 논문 메인 성능표 흐름에 맞춰 retrieval-only 지표보다 final QA answer quality를 앞에 둔 비교입니다.</p>
+              <div><div class='bar-row'><strong>BM25 without RAPTOR</strong><div class='bar-track'><div class='bar-fill' style='width:58.1%'></div></div><span>0.250</span></div><div class='bar-row'><strong>BM25 with RAPTOR</strong><div class='bar-track'><div class='bar-fill' style='width:94.2%'></div></div><span>0.405</span></div><div class='bar-row'><strong>BGE-M3 without RAPTOR</strong><div class='bar-track'><div class='bar-fill' style='width:100.0%'></div></div><span>0.430</span></div><div class='bar-row'><strong>BGE-M3 with RAPTOR</strong><div class='bar-track'><div class='bar-fill' style='width:99.5%'></div></div><span>0.428</span></div></div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>04</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-5">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">With/Without</div>
+        <h2>With RAPTOR 효과: 평균 delta</h2>
+      </div>
+      <div class="kicker">#05</div>
+    </div>
+
+            <table class='delta-table'><thead><tr><th>Retriever</th><th>Without</th><th>With RAPTOR</th><th>Answer delta</th><th>Quality delta</th></tr></thead><tbody><tr><td>BM25</td><td>leaf only</td><td>all nodes</td><td>F1 +0.155<br>Rec +0.207</td><td>Acc +0.400<br>J +1.900</td></tr><tr><td>BGE-M3</td><td>leaf only</td><td>all nodes</td><td>F1 -0.002<br>Rec +0.027</td><td>Acc -0.100<br>J +0.200</td></tr></tbody></table>
+            <div class="grid two">
+              <div class="claim"><div class="num">1</div><div><strong>BM25는 all-node 검색에서 답변 overlap이 증가</strong><p class="small">Answer F1/Recall이 함께 개선되어 summary node가 질문의 표현 범위를 보강했습니다.</p></div></div>
+              <div class="claim"><div class="num">2</div><div><strong>BGE-M3는 leaf-only와 all-node가 더 혼재</strong><p class="small">dense retriever는 local QA에서 leaf patent 직접 근거가 더 강한 경우가 섞였습니다.</p></div></div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>05</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-6">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Query type</div>
+        <h2>Global vs Local split: 평균 delta가 숨긴 패턴</h2>
+      </div>
+      <div class="kicker">#06</div>
+    </div>
+
+            <table class='split-table'><thead><tr><th>Retriever</th><th>Global<br>without</th><th>Global<br>with</th><th>Local<br>without</th><th>Local<br>with</th><th>Interpretation</th></tr></thead><tbody><tr><td>BM25</td><td>0.289</td><td>0.399</td><td>0.211</td><td>0.411</td><td>Global과 Local 모두에서 RAPTOR all-node 검색이 Answer F1을 높였습니다.</td></tr><tr><td>BGE-M3</td><td>0.292</td><td>0.393</td><td>0.568</td><td>0.463</td><td>Global QA에서는 summary/all-node가 유리하지만, Local QA에서는 특정 patent detail을 leaf에서 직접 찾는 조건이 더 강했습니다. 전체 평균은 이 상반된 효과를 가립니다.</td></tr></tbody></table>
+            <div class="grid two">
+              <div class="claim"><div class="num">G</div><div><strong>Global QA</strong><p class="small">Dense BGE-M3도 with RAPTOR가 더 높습니다. 여러 특허나 summary evidence를 종합해야 하는 질문에서는 all-node 검색이 도움을 줍니다.</p></div></div>
+              <div class="claim"><div class="num">L</div><div><strong>Local QA</strong><p class="small">Dense BGE-M3는 leaf-only가 더 높습니다. 특정 특허의 세부를 묻는 경우 원본 leaf 직접 검색이 더 유리했습니다.</p></div></div>
+            </div>
+            <p class="small">주의: Global 5개, Local 5개인 pilot sample입니다. 통계적으로 강한 결론이 아니라 후속 실험에서 QA 수를 늘려 검증해야 할 방향성입니다.</p>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>06</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-7">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Representative wins</div>
+        <h2>RAPTOR가 이긴 대표 사례</h2>
+      </div>
+      <div class="kicker">#07</div>
+    </div>
+    <table class='win-table'><thead><tr><th>QA</th><th>Ret.</th><th>Answer delta</th><th>Layers</th><th>Top sources</th><th>Why improved</th></tr></thead><tbody><tr><td><strong>7</strong><br><span class='small'>local</span></td><td>BM25</td><td>F1 <strong>+0.651</strong><br>Rec +0.833</td><td><div class='semi-lines'><span>L0:7, L1:4, L2:1</span></div></td><td><div class='semi-lines'><span>#217 L1 r1</span><span>#144 L0 r2</span><span>#211 L1 r3</span><span>#191 L0 r4</span></div></td><td>답변은 reference answer와 의미적으로 동일하며, retrieved context의 &#x27;누적값 벡터를 수신하고 각 누적값에 함수를 적용해 활성화값 벡터를 생성하는 활성화 회로&#x27;라는 내용으로 직접 뒷받침됩니다.</td></tr><tr><td><strong>6</strong><br><span class='small'>local</span></td><td>BM25</td><td>F1 <strong>+0.285</strong><br>Rec +0.222</td><td><div class='semi-lines'><span>L0:3, L1:4, L2:1</span></div></td><td><div class='semi-lines'><span>#220 L1 r1</span><span>#224 L1 r2</span><span>#204 L1 r3</span><span>#36 L0 r4</span></div></td><td>답변은 reference answer와 의미적으로 일치합니다. retrieved context에도 &#x27;1차 신경망 로직 회로를 위해 2차 신경망 로직 회로가 양자화 파라미터를 생성&#x27;한다고 명시되어 있어 충분히 뒷받침됩니다.</td></tr><tr><td><strong>2</strong><br><span class='small'>global</span></td><td>BGE-M3</td><td>F1 <strong>+0.207</strong><br>Rec +0.313</td><td><div class='semi-lines'><span>L1:2, L2:1, L3:2</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#235 L2 r2</span><span>#226 L1 r3</span><span>#222 L1 r4</span></div></td><td>답변은 reference answer의 핵심인 웨이퍼 공정 데이터·결함 데이터 기반 최적 위치/척 유형 결정, 미세 구조를 통한 활성 영역·핀·필러 정밀 분리와 전기적 특성 개선, 패키지 방열 구조를 통한 열 안정성·신뢰성 향상을 모두 의미적으로 정확히 반영한다. r…</td></tr><tr><td><strong>3</strong><br><span class='small'>global</span></td><td>BM25</td><td>F1 <strong>+0.168</strong><br>Rec +0.296</td><td><div class='semi-lines'><span>L0:1, L1:3, L2:2, L3:1</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#237 L2 r2</span><span>#202 L1 r3</span><span>#209 L1 r4</span></div></td><td>답변은 reference answer의 핵심인 처리 대상/데이터 범위 축소, 컨텍스트·클래스별 적응형 모델 조정, 프록시 모델과 비라벨 샘플링 활용, 얼굴 검출·파레트 기반 동일 인물 검색, 메모리 근접 해밍 비교를 모두 포함한다. retrieved context에도…</td></tr><tr><td><strong>0</strong><br><span class='small'>global</span></td><td>BM25</td><td>F1 <strong>+0.164</strong><br>Rec +0.194</td><td><div class='semi-lines'><span>L0:2, L1:2, L2:1, L3:1</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#229 L2 r2</span><span>#200 L1 r3</span><span>#220 L1 r4</span></div></td><td>Answer는 reference answer의 핵심 효과인 오류 허용 범위 내 전압·클록 제어, 양자화·압축에 따른 모델·메모리·연산량 감소, PIM/CIM에 의한 데이터 이동 및 외부 메모리 접근 감소, 칩렛/NoC 기반 작업 분산·라우팅 효율화를 모두 포함한다.…</td></tr></tbody></table>
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>07</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-8">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">BM25</div>
+        <h2>BM25는 왜 여전히 강한가</h2>
+      </div>
+      <div class="kicker">#08</div>
+    </div>
+
+            <div class="grid three">
+              <div class="claim"><div class="num">A</div><div><strong>희귀 전문 용어</strong><p class="small">GEMM, DDR, NoC, PIM/CIM 같은 용어는 IDF가 커서 질문과 직접 겹칠 때 강한 검색 신호가 됩니다.</p></div></div>
+              <div class="claim"><div class="num">B</div><div><strong>특허 표현의 정밀성</strong><p class="small">기술 구성요소 명칭이 자유롭게 치환되기보다 원문 표현으로 반복되어 lexical retrieval에 유리합니다.</p></div></div>
+              <div class="claim"><div class="num">C</div><div><strong>RAPTOR와 상보적</strong><p class="small">BM25는 precise source hit에 강하고, RAPTOR summary node는 reader가 종합 답변을 만들 근거를 보강합니다.</p></div></div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>08</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-9">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Faithfulness</div>
+        <h2>Appendix E: hallucination audit</h2>
+      </div>
+      <div class="kicker">#09</div>
+    </div>
+
+            <div class="grid three">
+              <div class="card metric-card"><strong>Audited nodes</strong><div class="value">12</div><div class="note">summary nodes</div></div>
+              <div class="card metric-card"><strong>Unsupported</strong><div class="value">1/12</div><div class="note">rate 0.083</div></div>
+              <div class="card metric-card"><strong>Severity</strong><div class="value" style="font-size:28px;">minor=1, none=11</div><div class="note">judge audit</div></div>
+            </div>
+            <div class="answer-box"><strong>Propagation check</strong><br>본 audit 범위에서는 환각 증상이 상위 노드로 전파되지 않았습니다. 탐지된 unsupported claim은 하위 summary node에서만 관찰되었습니다.</div>
+            <p class="small">Representative unsupported claim: &#x27;물리 시뮬레이션 가속 기술&#x27;이라는 표현은 child text의 탄화수소 저장소 모델링 설명에서 명시적으로 뒷받침되지 않습니다. child text는 머신러닝으로 역연산자를 근사해 저장소를 시뮬레이션한다고만 하며, 시뮬레이션을 가속한다는 효과나 목적은 직접 언급하지 않습니다.</p>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>09</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-10">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Source overlay</div>
+        <h2>Visualization overview</h2>
+      </div>
+      <div class="kicker">#10</div>
+    </div>
+
+            <p class="subtitle" style="font-size:18px;">대표 QA에 대해 with RAPTOR는 source node와 ancestor path를 mini-tree로, without RAPTOR는 ranked leaf strip으로 표시했습니다.</p>
+            <div class="visual-summary"><table><thead><tr><th>QA</th><th>Compared conditions in Visualization</th><th>Most useful condition</th><th>Why</th></tr></thead><tbody>
+<tr><td>QA 0</td><td>dense_bge_m3_with_raptor, dense_bge_m3_without_raptor</td><td><strong>dense_bge_m3_with_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.392, answer_recall=0.542</span></td><td>reference answer의 핵심 요소인 오류 허용 범위 기반 전압·클록 조정, 양자화·압축에 따른 모델/메모리/연산량 감소, PIM/CIM을 통한 데이터 이동 및 외부 메모리 접근 감소, 칩렛/NoC 기반 병렬 작업 분산 효과를 가장 균형 있게 포함한다. retrieved context에도 해당 요소들이 직접적으로…</td></tr>
+<tr><td>QA 1</td><td>bm25_with_raptor, bm25_without_raptor</td><td><strong>bm25_with_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.281, answer_recall=0.443</span></td><td>reference answer의 핵심 요소인 지식 그래프 기반 후보 축소, 웹 콘텐츠 기반 리스트형 답변 생성, 문맥 압축을 통한 LLM 입력량 감소, 이미지 코드의 해밍 비교 가속을 모두 포함하고, retrieved context에도 해당 기술 묶음과 효과가 근거로 제시되어 있어 가장 충실하고 근거성이 높다.</td></tr>
+<tr><td>QA 8</td><td>dense_bge_m3_with_raptor, dense_bge_m3_without_raptor, bm25_with_raptor</td><td><strong>dense_bge_m3_without_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.333, answer_recall=0.421</span></td><td>reference answer와 거의 동일하게, 센서 데이터 분석으로 결정된 구성 데이터가 식별한 각 동작을 수행하도록 이벤트가 생성되며, 이 이벤트가 해당 동작과 연관된 AI 모델 실행을 트리거한다는 핵심을 정확히 답했습니다. retrieved context에도 동일한 원문 근거가 직접 포함되어 있습니다.</td></tr>
+</tbody></table></div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>10</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-11">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Dense global success: summary-heavy evidence</div>
+        <h2>QA 0 source overlay</h2>
+      </div>
+      <div class="kicker">#11</div>
+    </div>
+
+    <div class="grid two" style="grid-template-columns:1.25fr .75fr; gap:18px;">
+      <div>
+        <p class="subtitle" style="font-size:18px; margin-bottom:12px;">신경망 시스템의 전력 효율을 높이기 위해 전압·클록 제어, 양자화, PIM/CIM 연산, 칩렛/NoC 스케줄링 기술을 함께 적용하면 어떤 종합 효과를 기대할 수 있는가?</p>
+        <svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 395.0 26.0 C 395.0 57.6, 282.7 64.7, 282.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 507.3 64.7, 507.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 96.3 C 282.7 128.0, 507.3 135.0, 507.3 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 96.3 C 282.7 128.0, 282.7 135.0, 282.7 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+</g><g>
+<g transform="translate(282.7,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(395.0,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(507.3,96.3)">
+<title>#236 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#236</text>
+</g>
+<g transform="translate(507.3,166.7)">
+<title>#212 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#212</text>
+</g>
+<g transform="translate(282.7,166.7)">
+<title>#228 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#228</text>
+</g>
+</g></svg>
+        <div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+      </div>
+      <div class="grid" style="gap:12px;">
+        <div class="card">
+          <strong>BGE-M3 with RAPTOR</strong>
+          <span class="pill">score 5/5</span>
+          <span class="pill">supported true</span>
+          <span class="pill">Answer F1 0.392</span>
+          <span class="pill">Recall 0.542</span>
+        </div>
+        <div class='source-list'><div class='source-item'><strong>r1 | #238 | L3</strong><span>이 특허 묶음은 AI·신경망 처리, 메모리 중심 연산, 반도체 패키징, 검색·질의응답, 영상·이미지 처리, SoC/NoC 제어 기술을 포괄한다. 핵심 기술 - 신경망 실행 결과의 오류율을…</span><br><span class='small'>-</span></div><div class='source-item'><strong>r2 | #233 | L2</strong><span>이 특허 묶음은 메모리 중심 연산, PIM/CIM, 신경망 가속기, 3D/2.5D 반도체 패키징, 분산 병렬 처리 및 머신러닝 학습 효율화 기술을 포괄한다. 핵심 기술은 메모리 내부 또는…</span><br><span class='small'>-</span></div></div>
+        <div class="answer-box"><strong>Answer sketch</strong><br>전압·클록 제어, 양자화, PIM/CIM 연산, 칩렛/NoC 스케줄링을 함께 적용하면 신경망 시스템 전반에서 다음과 같은 종합 효과를 기대할 수 있다. 허용 가능한 오류 범위 안에서 전압과 클록을 조정해 불필요한 전력 소모를 줄이고, 양자화…</div>
+      </div>
+    </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>11</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-12">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">BM25 global success: lexical terms + summary evid…</div>
+        <h2>QA 1 source overlay</h2>
+      </div>
+      <div class="kicker">#12</div>
+    </div>
+
+    <div class="grid two" style="grid-template-columns:1.25fr .75fr; gap:18px;">
+      <div>
+        <p class="subtitle" style="font-size:18px; margin-bottom:12px;">검색·질의응답 시스템에서 지식 그래프, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 압축, 이미지 코드 비교 기술을 결합하면 어떤 방식으로 응답 생성 효율을 높일 수 있는가?</p>
+        <svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 226.5 96.3 C 226.5 128.0, 226.5 135.0, 226.5 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 563.5 64.7, 563.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 96.3 C 395.0 128.0, 395.0 135.0, 395.0 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 166.7 C 395.0 198.3, 282.7 205.3, 282.7 237.0" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 166.7 C 563.5 198.3, 507.3 205.3, 507.3 237.0" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 226.5 64.7, 226.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 96.3 C 563.5 128.0, 563.5 135.0, 563.5 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+</g><g>
+<g transform="translate(226.5,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(563.5,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(395.0,166.7)">
+<title>#202 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#202</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#237 L2 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#237</text>
+</g>
+<g transform="translate(282.7,237.0)">
+<title>#43 L0 2022-0176479</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0176479</text>
+</g>
+<g transform="translate(507.3,237.0)">
+<title>#147 L0 2022-0077390</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0077390</text>
+</g>
+<g transform="translate(395.0,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(226.5,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(563.5,166.7)">
+<title>#210 L1 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#210</text>
+</g>
+</g></svg>
+        <div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+      </div>
+      <div class="grid" style="gap:12px;">
+        <div class="card">
+          <strong>BM25 with RAPTOR</strong>
+          <span class="pill">score 5/5</span>
+          <span class="pill">supported true</span>
+          <span class="pill">Answer F1 0.281</span>
+          <span class="pill">Recall 0.443</span>
+        </div>
+        <div class='source-list'><div class='source-item'><strong>r1 | #238 | L3</strong><span>이 특허 묶음은 AI·신경망 처리, 메모리 중심 연산, 반도체 패키징, 검색·질의응답, 영상·이미지 처리, SoC/NoC 제어 기술을 포괄한다. 핵심 기술 - 신경망 실행 결과의 오류율을…</span><br><span class='small'>-</span></div><div class='source-item'><strong>r2 | #234 | L2</strong><span>이 특허 묶음은 AI를 활용해 검색 질의, 센서 데이터, 자연어 텍스트, 지식 그래프, 웹 콘텐츠, 질의응답 후보, 언어모델 입력 문맥에서 관련 정보를 추출·평가·응답하는 기술에 관한 것…</span><br><span class='small'>-</span></div></div>
+        <div class="answer-box"><strong>Answer sketch</strong><br>제공된 맥락상, 네 기술을 결합하면 응답 생성 전에 관련 후보를 줄이고, 입력 문맥을 압축하며, 이미지 매칭 처리를 메모리 근접에서 수행하는 방식으로 효율을 높일 수 있다. 검색 질의가 들어오면 먼저 지식 그래프에서 노드 임베딩을 이진 임베…</div>
+      </div>
+    </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>12</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-13">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Dense local success: semantic retrieval found the…</div>
+        <h2>QA 8 source overlay</h2>
+      </div>
+      <div class="kicker">#13</div>
+    </div>
+
+    <div class="grid two" style="grid-template-columns:1.25fr .75fr; gap:18px;">
+      <div>
+        <p class="subtitle" style="font-size:18px; margin-bottom:12px;">17-070786 특허에서 센서 데이터 분석 후 생성되는 이벤트의 목적은 무엇인가요?</p>
+        <svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 170.3 96.3 C 170.3 128.0, 192.8 135.0, 192.8 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 282.7 64.7, 282.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 619.7 64.7, 619.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 507.3 64.7, 507.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 462.4 166.7 C 462.4 198.3, 507.3 205.3, 507.3 237.0" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 192.8 166.7 C 192.8 198.3, 282.7 205.3, 282.7 237.0" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 170.3 64.7, 170.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 395.0 96.3 C 395.0 128.0, 597.2 135.0, 597.2 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 619.7 96.3 C 619.7 128.0, 462.4 135.0, 462.4 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 96.3 C 507.3 128.0, 327.6 135.0, 327.6 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+</g><g>
+<g transform="translate(192.8,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(282.7,96.3)">
+<title>#235 L2 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">8</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#235</text>
+</g>
+<g transform="translate(619.7,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(507.3,26.0)">
+<title>#239 L3 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#239</text>
+</g>
+<g transform="translate(507.3,96.3)">
+<title>#229 L2 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#229</text>
+</g>
+<g transform="translate(507.3,237.0)">
+<title>#41 L0 2022-0154783</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0154783</text>
+</g>
+<g transform="translate(282.7,237.0)">
+<title>#10 L0 17-070786</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">17-070786</text>
+</g>
+<g transform="translate(282.7,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(170.3,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(597.2,166.7)">
+<title>#214 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#214</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#232 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#64748b" stroke-width="1.1"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">9</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#232</text>
+</g>
+<g transform="translate(462.4,166.7)">
+<title>#212 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#212</text>
+</g>
+<g transform="translate(327.6,166.7)">
+<title>#224 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#224</text>
+</g>
+</g></svg>
+        <div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+      </div>
+      <div class="grid" style="gap:12px;">
+        <div class="card">
+          <strong>BGE-M3 with RAPTOR</strong>
+          <span class="pill">score 5/5</span>
+          <span class="pill">supported true</span>
+          <span class="pill">Answer F1 0.340</span>
+          <span class="pill">Recall 0.474</span>
+        </div>
+        <div class='source-list'><div class='source-item'><strong>r1 | #208 | L1</strong><span>이 특허 묶음은 검색, 질의응답, 지식 그래프, 센서 데이터 분석, 언어모델 프롬프트 처리 등에서 AI 기반으로 관련 정보를 추출·평가·응답하는 기술을 다룬다. 핵심 기술은 다음과 같다.…</span><br><span class='small'>-</span></div><div class='source-item'><strong>r2 | #10 | L</strong><span>Event driven configurable artificial intelligence workflow. In one embodiment, in response to sensor dat…</span><br><span class='small'>17-070786</span></div></div>
+        <div class="answer-box"><strong>Answer sketch</strong><br>센서 데이터 분석 후 생성되는 이벤트의 목적은, 구성 데이터가 식별한 각 동작이 수행되도록 트리거하는 것입니다. 각 이벤트에 대응하여 해당 동작과 연관된 AI 모델이 실행되고, 이 모델이 센서 데이터의 적어도 일부에 적용되어 센서 데이터를…</div>
+      </div>
+    </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>13</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-14">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">BM25 limitation: source hit but answer unsupported</div>
+        <h2>QA 8 source overlay</h2>
+      </div>
+      <div class="kicker">#14</div>
+    </div>
+
+    <div class="grid two" style="grid-template-columns:1.25fr .75fr; gap:18px;">
+      <div>
+        <p class="subtitle" style="font-size:18px; margin-bottom:12px;">17-070786 특허에서 센서 데이터 분석 후 생성되는 이벤트의 목적은 무엇인가요?</p>
+        <svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 226.5 96.3 C 226.5 128.0, 282.7 135.0, 282.7 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 563.5 64.7, 563.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 96.3 C 563.5 128.0, 507.3 135.0, 507.3 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 226.5 64.7, 226.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+</g><g>
+<g transform="translate(282.7,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(282.7,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(563.5,96.3)">
+<title>#236 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#236</text>
+</g>
+<g transform="translate(507.3,166.7)">
+<title>#223 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#223</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#232 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#232</text>
+</g>
+<g transform="translate(226.5,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(507.3,26.0)">
+<title>#239 L3 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#239</text>
+</g>
+</g></svg>
+        <div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+      </div>
+      <div class="grid" style="gap:12px;">
+        <div class="card">
+          <strong>BM25 with RAPTOR</strong>
+          <span class="pill">score 2/5</span>
+          <span class="pill">supported false</span>
+          <span class="pill">Answer F1 0.182</span>
+          <span class="pill">Recall 0.211</span>
+        </div>
+        <div class='source-list'><div class='source-item'><strong>r1 | #208 | L1</strong><span>이 특허 묶음은 검색, 질의응답, 지식 그래프, 센서 데이터 분석, 언어모델 프롬프트 처리 등에서 AI 기반으로 관련 정보를 추출·평가·응답하는 기술을 다룬다. 핵심 기술은 다음과 같다.…</span><br><span class='small'>-</span></div><div class='source-item'><strong>r2 | #234 | L2</strong><span>이 특허 묶음은 AI를 활용해 검색 질의, 센서 데이터, 자연어 텍스트, 지식 그래프, 웹 콘텐츠, 질의응답 후보, 언어모델 입력 문맥에서 관련 정보를 추출·평가·응답하는 기술에 관한 것…</span><br><span class='small'>-</span></div></div>
+        <div class="answer-box"><strong>Answer sketch</strong><br>센서 데이터 분석 후 생성되는 이벤트의 목적은 분석 결과에 따라 실행할 동작과 대응 AI 모델을 결정하고, 그 AI 모델을 이용해 센서 데이터를 분류하기 위한 것입니다.</div>
+      </div>
+    </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>14</span></div>
+  </div>
+</section>
+
+
+<section class="slide" id="slide-15">
+  <div class="slide-inner">
+    <div class="slide-title">
+      <div>
+        <div class="eyebrow">Takeaway</div>
+        <h2>결론: RAPTOR의 장점은 검색 hit보다 답변 근거 보강에서 보인다</h2>
+      </div>
+      <div class="kicker">#15</div>
+    </div>
+
+            <div class="grid two">
+              <div class="claim"><div class="num">1</div><div><strong>RAPTOR is not a universal BM25 replacement</strong><p class="small">특허 데이터에서는 BM25의 exact lexical matching이 강한 baseline으로 남습니다.</p></div></div>
+              <div class="claim"><div class="num">2</div><div><strong>All-node retrieval can improve answer synthesis</strong><p class="small">상위 summary node는 global QA에서 reader가 여러 leaf의 공통 효과를 묶어 답하게 돕습니다.</p></div></div>
+              <div class="claim"><div class="num">3</div><div><strong>Faithfulness audit is required</strong><p class="small">summary node에는 unsupported claim 위험이 있으므로 leaf-level source overlay와 judge audit를 함께 봐야 합니다.</p></div></div>
+              <div class="claim"><div class="num">4</div><div><strong>BGE-M3는 DPR 대체 dense baseline</strong><p class="small">한/영 특허 데이터에서는 Meta DPR보다 multilingual dense model을 주 baseline으로 해석하는 것이 적절합니다.</p></div></div>
+            </div>
+
+    <div class="foot"><span>HYU-RAPTOR patent experiment</span><span>15</span></div>
+  </div>
+</section>
+
+</main>
+<script>document.addEventListener('keydown',e=>{const slides=[...document.querySelectorAll('.slide')];const y=window.scrollY;let i=slides.findIndex(s=>s.offsetTop+s.offsetHeight/2>y);if(e.key==='ArrowRight'||e.key==='PageDown'){slides[Math.min(slides.length-1,i+1)]?.scrollIntoView({behavior:'smooth'});}if(e.key==='ArrowLeft'||e.key==='PageUp'){slides[Math.max(0,i-1)]?.scrollIntoView({behavior:'smooth'});}});</script>
+<!-- Generated 2026-05-30T23:26:29 from run patent_raptor_v3_20260530_152153 -->
+</body></html>

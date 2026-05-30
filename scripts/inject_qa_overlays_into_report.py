@@ -10,7 +10,18 @@ from pathlib import Path
 from typing import Dict, List
 
 
-METHOD_ORDER = ["traverse_tree", "collapsed_tree", "bm25_leaf", "dpr_leaf"]
+METHOD_ORDER = [
+    "bm25_without_raptor",
+    "bm25_with_raptor",
+    "dense_bge_m3_without_raptor",
+    "dense_bge_m3_with_raptor",
+    "dpr_without_raptor",
+    "dpr_with_raptor",
+    "traverse_tree",
+    "collapsed_tree",
+    "bm25_leaf",
+    "dpr_leaf",
+]
 
 
 def compact_node(node: Dict) -> Dict:
@@ -38,7 +49,6 @@ def compact_source(source: Dict) -> Dict:
         "layer": source.get("layer", ""),
         "score": source.get("score", ""),
         "token_count": source.get("token_count", ""),
-        "contains_expected": source.get("contains_expected", False),
         "descendant_patent_ids": source.get("descendant_patent_ids", [])[:8],
     }
 
@@ -71,8 +81,6 @@ def compact_qa(qa: Dict) -> Dict:
         "qa_index": qa.get("qa_index"),
         "question": qa.get("question", ""),
         "reference_answer": qa.get("reference_answer", ""),
-        "expected_patent_ids": qa.get("expected_patent_ids", []),
-        "expected_node_indices": qa.get("expected_node_indices", []),
         "category": qa.get("category", ""),
         "category_name": qa.get("category_name", ""),
         "question_type": qa.get("question_type", ""),
@@ -120,7 +128,7 @@ def section_html(payload: Dict) -> str:
 .qa-legend{display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:#475569}
 .qa-key{display:inline-flex;align-items:center;gap:4px}
 .qa-dot{width:10px;height:10px;border-radius:50%;border:2px solid #475569;background:#fff}
-.qa-dot.source{border-color:#f59e0b}.qa-dot.expected{border-color:#dc2626}.qa-dot.both{border-color:#16a34a}
+.qa-dot.source{border-color:#f59e0b}
 .qa-mini-svg{width:100%;min-height:640px;border:1px solid #e2e8f0;border-radius:8px;background:linear-gradient(90deg,rgba(100,116,139,.08) 1px,transparent 1px),linear-gradient(rgba(100,116,139,.06) 1px,transparent 1px);background-size:32px 32px}
 .qa-source-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px;margin-top:8px}
 .qa-source-item{border:1px solid #e2e8f0;border-radius:7px;background:#fbfdff;padding:7px;font-size:12px;color:#334155;text-align:left;cursor:pointer;font:inherit}
@@ -141,7 +149,7 @@ def section_html(payload: Dict) -> str:
 @media (max-width: 980px){.qa-control-row{grid-template-columns:1fr}}
 </style>
 <h2>QA Source Overlays</h2>
-<p class="qa-source-intro">Each card places the question and reader answer beside a mini-tree of the tree/BM25 source nodes passed into the reader. Changing the method updates both the answer and the overlay.</p>
+<p class="qa-source-intro">Each card places the question and reader answer beside a mini-tree of the tree/BM25 source nodes passed into the reader. Changing the method updates the answer and the overlay.</p>
 <div id="qaOverlayCards"></div>
 <script type="application/json" id="qaOverlayData">__PAYLOAD__</script>
 <script>
@@ -190,7 +198,6 @@ def section_html(payload: Dict) -> str:
     const ids = new Set();
     for (const value of method.path_node_indices || []) ids.add(String(value));
     for (const value of method.source_node_indices || []) ids.add(String(value));
-    for (const value of qa.expected_node_indices || []) ids.add(String(value));
     return ids;
   }
   function makeSvg(tag){
@@ -204,7 +211,6 @@ def section_html(payload: Dict) -> str:
     const method = qa.methods[methodName];
     const ids = relevantIds(qa, method);
     const sourceSet = new Set((method.source_node_indices || []).map(String));
-    const expectedSet = new Set((qa.expected_node_indices || []).map(String));
     const rankById = new Map((method.source_nodes || []).map(source => [String(source.node_index), source.rank]));
     const nodes = Array.from(ids).map(id => byId.get(id)).filter(Boolean);
     const byLayer = new Map();
@@ -263,7 +269,6 @@ def section_html(payload: Dict) -> str:
       const pos = positions.get(id);
       if (!pos) continue;
       const isSource = sourceSet.has(id);
-      const isExpected = expectedSet.has(id);
       const isSelected = selectedNodeId && id === String(selectedNodeId);
       const g = makeSvg("g");
       g.setAttribute("class", "qa-svg-node");
@@ -271,10 +276,10 @@ def section_html(payload: Dict) -> str:
       g.setAttribute("data-node-id", id);
       const c = makeSvg("circle");
       const radius = node.node_type === "leaf" ? 6 : 9;
-      c.setAttribute("r", isSource || isExpected ? radius + 2 : radius);
+      c.setAttribute("r", isSource ? radius + 2 : radius);
       c.setAttribute("fill", nodeColor(node));
-      c.setAttribute("stroke", isSelected ? "#111827" : isSource && isExpected ? "#16a34a" : isExpected ? "#dc2626" : isSource ? "#f59e0b" : "#475569");
-      c.setAttribute("stroke-width", isSelected ? "4" : isSource || isExpected ? "3" : "1.3");
+      c.setAttribute("stroke", isSelected ? "#111827" : isSource ? "#f59e0b" : "#475569");
+      c.setAttribute("stroke-width", isSelected ? "4" : isSource ? "3" : "1.3");
       g.appendChild(c);
       g.addEventListener("click", () => {
         card.dataset.selectedNodeId = id;
@@ -313,7 +318,7 @@ def section_html(payload: Dict) -> str:
       const node = byId.get(String(source.node_index));
       const label = node ? (node.patent_id || node.title || `node ${node.index}`) : `node ${source.node_index}`;
       const active = String(source.node_index) === String(selectedNodeId) ? " active" : "";
-      return `<button type="button" class="qa-source-item${active}" data-node-id="${escapeHtml(source.node_index)}"><strong>r${escapeHtml(source.rank)} #${escapeHtml(source.node_index)} L${escapeHtml(source.layer)}</strong><br>${escapeHtml(truncate(label, 72))}<br>score ${escapeHtml(numberText(source.score, 3))} | expected ${source.contains_expected ? "yes" : "no"}</button>`;
+      return `<button type="button" class="qa-source-item${active}" data-node-id="${escapeHtml(source.node_index)}"><strong>r${escapeHtml(source.rank)} #${escapeHtml(source.node_index)} L${escapeHtml(source.layer)}</strong><br>${escapeHtml(truncate(label, 72))}<br>score ${escapeHtml(numberText(source.score, 3))}</button>`;
     }).join("");
   }
   function renderNodeDetail(card, method, selectedNodeId){
@@ -331,7 +336,7 @@ def section_html(payload: Dict) -> str:
         <dt>Node</dt><dd>#${escapeHtml(node.index)} / L${escapeHtml(node.layer)} / ${escapeHtml(node.node_type)}</dd>
         <dt>Category</dt><dd>${escapeHtml(node.category || node.dominant_category || "-")} ${escapeHtml(node.category_name || "")}</dd>
         <dt>Patent</dt><dd>${escapeHtml(node.patent_id || "-")}</dd>
-        <dt>Source</dt><dd>${source ? `rank ${escapeHtml(source.rank)}, score ${escapeHtml(numberText(source.score, 3))}, expected ${source.contains_expected ? "yes" : "no"}` : "-"}</dd>
+        <dt>Source</dt><dd>${source ? `rank ${escapeHtml(source.rank)}, score ${escapeHtml(numberText(source.score, 3))}` : "-"}</dd>
       </dl>
       <div class="qa-node-text">${textHtml(node.text_preview || "")}</div>
     `;
@@ -386,8 +391,6 @@ def section_html(payload: Dict) -> str:
           <div class="qa-viz-title">Source path mini-tree</div>
           <div class="qa-legend">
             <span class="qa-key"><span class="qa-dot source"></span>retrieved source</span>
-            <span class="qa-key"><span class="qa-dot expected"></span>expected leaf</span>
-            <span class="qa-key"><span class="qa-dot both"></span>both</span>
           </div>
         </div>
         <svg class="qa-mini-svg" role="img" aria-label="QA source tree"></svg>
@@ -431,10 +434,15 @@ def inject_section(report: str, section: str) -> str:
         after = report.split(end, 1)[1]
         return before + section + after
 
-    anchor = "<h2>Answer Scores</h2>"
-    if anchor not in report:
-        raise ValueError("Could not find insertion anchor: Answer Scores")
-    return report.replace(anchor, section + "\n" + anchor, 1)
+    anchors = [
+        "<h2>Paper Metric Basis</h2>",
+        "<h2>Paper Main - Answer F1</h2>",
+        "<h2>Answer Scores</h2>",
+    ]
+    for anchor in anchors:
+        if anchor in report:
+            return report.replace(anchor, section + "\n" + anchor, 1)
+    raise ValueError("Could not find insertion anchor for QA source overlays")
 
 
 def parse_args() -> argparse.Namespace:

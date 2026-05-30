@@ -8,11 +8,17 @@ from raptor.SummarizationModels import BaseSummarizationModel
 from raptor.bm25 import BM25Retriever
 from raptor.cluster_tree_builder import ClusterTreeConfig, ClusterTreeBuilder
 from raptor.cluster_utils import HardKMeansClustering
+from raptor.dense import DenseRetriever
 from raptor.dpr import DPRRetriever
 from raptor.experiment_utils import patent_documents, sample_patents
 from raptor.structured_retrieval import retrieve_collapsed_tree, retrieve_traverse_tree
 from raptor.tokenization import get_tokenizer
-from scripts.run_patent_raptor_experiment import fallback_global_local_qa
+from scripts.run_patent_raptor_experiment import (
+    answer_methods,
+    build_all_node_bm25_documents,
+    fallback_global_local_qa,
+    retrieval_results_for_query,
+)
 
 
 class FakeSummarizer(BaseSummarizationModel):
@@ -135,6 +141,48 @@ class PatentPipelineTests(unittest.TestCase):
         self.assertEqual(dpr_result.method, "dpr_leaf")
         self.assertTrue(dpr_result.hits)
         self.assertLessEqual(len(dpr_result.hits), 2)
+
+        args = type(
+            "Args",
+            (),
+            {
+                "retrieval_design": "with_without_raptor",
+                "include_dpr_baseline": False,
+                "bm25_top_k": 2,
+                "dense_top_k": 2,
+                "dpr_top_k": 2,
+                "traverse_top_k": 1,
+                "collapsed_top_k": 2,
+                "max_context_tokens": 2000,
+            },
+        )()
+        all_node_docs = build_all_node_bm25_documents(tree)
+        retrievers = {
+            "bm25_without_raptor": BM25Retriever(
+                documents, method="bm25_without_raptor"
+            ),
+            "bm25_with_raptor": BM25Retriever(
+                all_node_docs, method="bm25_with_raptor"
+            ),
+            "dense_bge_m3_without_raptor": DenseRetriever(
+                documents,
+                embedding_model=embedding_model,
+                method="dense_bge_m3_without_raptor",
+            ),
+        }
+        v3_results = retrieval_results_for_query(
+            args, "행렬 연산", tree, embedding_model, retrievers, tokenizer
+        )
+        self.assertEqual(
+            [result.method for result in v3_results],
+            list(answer_methods(args)),
+        )
+        with_layers = [
+            hit.metadata.get("layer")
+            for hit in v3_results[1].hits
+            if "layer" in hit.metadata
+        ]
+        self.assertTrue(with_layers)
 
     def test_global_local_fallback_qa_counts(self):
         rows = []

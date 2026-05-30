@@ -91,6 +91,7 @@ def retrieve_collapsed_tree(
     tokenizer,
     top_k: int = 20,
     max_tokens: int = 2000,
+    method: str = "collapsed_tree",
 ) -> RetrievalResult:
     started_at = time.time()
     query_embedding = embedding_model.create_embedding(query)
@@ -114,7 +115,7 @@ def retrieve_collapsed_tree(
             break
 
     return RetrievalResult(
-        method="collapsed_tree",
+        method=method,
         query=query,
         context=get_text(selected_nodes),
         nodes=_materialize_nodes(tree, selected_nodes, scores, tokenizer),

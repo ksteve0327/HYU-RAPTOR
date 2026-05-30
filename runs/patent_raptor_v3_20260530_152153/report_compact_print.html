@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>RAPTOR Patent Experiment Report - Compact Print</title>
+<style>
+:root { color-scheme: light; }
+@page { size: A4 portrait; margin: 12mm 11mm 14mm; }
+* { box-sizing: border-box; }
+html, body { background: #fff; color: #111827; }
+body {
+  width: 210mm;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 12mm 11mm;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 9.4pt;
+  line-height: 1.38;
+}
+.toolbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin: -12mm -11mm 8mm;
+  padding: 8px 11mm;
+  border-bottom: 1px solid #cbd5e1;
+  background: #fff;
+}
+.toolbar a, .toolbar button {
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  padding: 5px 9px;
+  text-decoration: none;
+}
+h1 {
+  margin: 0 0 5mm;
+  padding-bottom: 3mm;
+  border-bottom: 2px solid #111827;
+  font-size: 20pt;
+  line-height: 1.12;
+}
+h2 {
+  margin: 8mm 0 3mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 1px solid #94a3b8;
+  font-size: 13.5pt;
+  line-height: 1.18;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+h3 {
+  margin: 5mm 0 2mm;
+  font-size: 11pt;
+  break-after: avoid;
+  page-break-after: avoid;
+}
+p { margin: 0 0 3mm; }
+ul { margin: 1.5mm 0 4mm 5mm; padding: 0; }
+li { margin: 0 0 1.6mm; }
+table {
+  width: 100%;
+  margin: 2mm 0 6mm;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 8.1pt;
+}
+thead { display: table-header-group; }
+tr, .card, .note { break-inside: avoid; page-break-inside: avoid; }
+th, td {
+  border: 1px solid #cbd5e1;
+  padding: 3pt 3.5pt;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+th {
+  background: #eef2ff;
+  font-weight: 700;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3mm;
+  margin: 0 0 5mm;
+}
+.card, .note, .tree-case {
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fff;
+  padding: 3mm;
+}
+.card strong {
+  display: block;
+  margin-bottom: 1mm;
+  font-size: 8.2pt;
+  color: #475569;
+}
+.card .value {
+  font-size: 13pt;
+  font-weight: 750;
+  color: #111827;
+}
+.note {
+  margin: 0 0 4mm;
+  background: #f8fafc;
+  color: #334155;
+}
+.small { color: #475569; font-size: 7.8pt; }
+.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+.tag {
+  display: inline-block;
+  margin: 0 2pt 2pt 0;
+  padding: 1pt 4pt;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #f8fafc;
+  white-space: nowrap;
+}
+.tree-case {
+  margin: 0 0 5mm;
+}
+.tree-case h3 {
+  margin-top: 0;
+}
+.without-comparison {
+  margin-top: 2mm;
+  padding-top: 2mm;
+  border-top: 1px dashed #94a3b8;
+}
+.without-comparison h4 {
+  margin: 0 0 1mm;
+  font-size: 9.4pt;
+}
+.without-visual-head {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.usefulness {
+  margin: 1.5mm 0 2mm;
+  padding: 2mm;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #64748b;
+  border-radius: 4px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 7.8pt;
+}
+.usefulness strong {
+  color: #111827;
+}
+.usefulness.best {
+  border-left-color: #059669;
+  background: #f0fdf4;
+}
+.usefulness.comparable {
+  border-left-color: #2563eb;
+  background: #eff6ff;
+}
+.usefulness.usable {
+  border-left-color: #d97706;
+  background: #fff7ed;
+}
+.usefulness.weak {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+.tree-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5mm;
+  margin: .7mm 0 1.5mm;
+  color: #475569;
+  font-size: 7.8pt;
+}
+.mini-tree {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid #dbe3ef;
+  border-radius: 4px;
+  background:
+    linear-gradient(90deg, rgba(100, 116, 139, .10) 1px, transparent 1px),
+    linear-gradient(rgba(100, 116, 139, .08) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+.tree-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.2mm;
+  margin-top: 1mm;
+  color: #475569;
+  font-size: 7.4pt;
+}
+.tree-note {
+  margin: .7mm 0 1.5mm;
+  padding: 1.6mm;
+}
+.node-meaning-table {
+  margin-top: 2mm;
+  margin-bottom: 0;
+  font-size: 7.4pt;
+  table-layout: fixed;
+  border: 1px solid #cbd5e1;
+}
+.node-meaning-table th {
+  background: #eef2ff;
+  font-weight: 700;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.node-meaning-table th,
+.node-meaning-table td {
+  border: 1px solid #cbd5e1;
+  padding: 3pt 3.5pt;
+  text-align: left;
+  vertical-align: top;
+}
+.node-meaning-table th:nth-child(1),
+.node-meaning-table td:nth-child(1) {
+  width: 6%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.node-meaning-table th:nth-child(2),
+.node-meaning-table td:nth-child(2) {
+  width: 8%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.node-meaning-table th:nth-child(3),
+.node-meaning-table td:nth-child(3) {
+  width: 7%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.node-meaning-table th:nth-child(4),
+.node-meaning-table td:nth-child(4) {
+  line-height: 1.45;
+  width: 63%;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+.node-meaning-table th:nth-child(5),
+.node-meaning-table td:nth-child(5) {
+  width: 16%;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+.answer-evidence {
+  margin-top: 2mm;
+  padding: 2.4mm;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #fbfdff;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.answer-evidence h4 {
+  margin: 0 0 1mm;
+  font-size: 9.6pt;
+}
+.answer-text {
+  margin: 0 0 1.5mm;
+  color: #111827;
+}
+.evidence-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5mm;
+  margin: .7mm 0 1mm;
+  font-size: 7.5pt;
+  color: #475569;
+}
+.evidence-chip {
+  display: inline-block;
+  padding: .5pt 4pt;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  white-space: nowrap;
+}
+.evidence-hit {
+  border-radius: 2px;
+  padding: 0 .5px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+.ev1 { background: linear-gradient(transparent 55%, rgba(245, 158, 11, .45) 0); }
+.ev2 { background: linear-gradient(transparent 55%, rgba(16, 185, 129, .38) 0); }
+.ev3 { background: linear-gradient(transparent 55%, rgba(59, 130, 246, .35) 0); }
+.ev4 { background: linear-gradient(transparent 55%, rgba(168, 85, 247, .34) 0); }
+.ev5 { background: linear-gradient(transparent 55%, rgba(239, 68, 68, .32) 0); }
+.ev6 { background: linear-gradient(transparent 55%, rgba(20, 184, 166, .35) 0); }
+.ev7 { background: linear-gradient(transparent 55%, rgba(100, 116, 139, .28) 0); }
+.ev8 { background: linear-gradient(transparent 55%, rgba(132, 204, 22, .35) 0); }
+.metric-guide-table {
+  margin-top: -2mm;
+  margin-bottom: 5mm;
+  font-size: 7.9pt;
+}
+.metric-guide-table th {
+  background: #f1f5f9;
+}
+.metric-guide-table td:first-child {
+  width: 15%;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.metric-guide-table th:nth-child(2),
+.metric-guide-table td:nth-child(2) {
+  width: 15%;
+  white-space: nowrap;
+}
+.metric-kind {
+  display: inline-block;
+  min-width: 58px;
+  padding: 1pt 4pt;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-weight: 700;
+  text-align: center;
+  white-space: nowrap;
+}
+.metric-kind.retrieval {
+  background: #ecfdf5;
+  color: #047857;
+}
+.raptor-win-table,
+.raptor-delta-table {
+  table-layout: fixed;
+  font-size: 7.35pt;
+}
+.raptor-win-table th,
+.raptor-win-table td,
+.raptor-delta-table th,
+.raptor-delta-table td {
+  padding: 2.6pt 3pt;
+  overflow-wrap: break-word;
+}
+.raptor-win-table th:nth-child(1),
+.raptor-win-table td:nth-child(1) {
+  width: 7%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.raptor-win-table th:nth-child(2),
+.raptor-win-table td:nth-child(2) {
+  width: 9%;
+  white-space: normal;
+}
+.raptor-win-table th:nth-child(3),
+.raptor-win-table td:nth-child(3),
+.raptor-win-table th:nth-child(4),
+.raptor-win-table td:nth-child(4) {
+  width: 9%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.raptor-win-table th:nth-child(5),
+.raptor-win-table td:nth-child(5) {
+  width: 10%;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+.raptor-win-table th:nth-child(6),
+.raptor-win-table td:nth-child(6) {
+  width: 13%;
+}
+.raptor-win-table th:nth-child(7),
+.raptor-win-table td:nth-child(7) {
+  width: 42%;
+}
+.raptor-delta-table th:nth-child(1),
+.raptor-delta-table td:nth-child(1) {
+  width: 11%;
+}
+.raptor-delta-table th:nth-child(2),
+.raptor-delta-table td:nth-child(2),
+.raptor-delta-table th:nth-child(3),
+.raptor-delta-table td:nth-child(3) {
+  width: 19%;
+}
+.raptor-delta-table th:nth-child(4),
+.raptor-delta-table td:nth-child(4),
+.raptor-delta-table th:nth-child(5),
+.raptor-delta-table td:nth-child(5) {
+  width: 11%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.raptor-delta-table th:nth-child(6),
+.raptor-delta-table td:nth-child(6) {
+  width: 29%;
+}
+.split-table {
+  table-layout: fixed;
+  font-size: 7.7pt;
+  margin-top: 2mm;
+}
+.split-table th,
+.split-table td {
+  padding: 2.6pt 3pt;
+}
+.split-table th:nth-child(1),
+.split-table td:nth-child(1) {
+  width: 13%;
+}
+.split-table th:nth-child(2),
+.split-table td:nth-child(2),
+.split-table th:nth-child(3),
+.split-table td:nth-child(3),
+.split-table th:nth-child(4),
+.split-table td:nth-child(4),
+.split-table th:nth-child(5),
+.split-table td:nth-child(5) {
+  width: 10%;
+  white-space: nowrap;
+}
+.split-table th:nth-child(6),
+.split-table td:nth-child(6) {
+  width: 47%;
+}
+.appendix-sample-table {
+  table-layout: fixed;
+}
+.appendix-sample-table th:nth-child(1),
+.appendix-sample-table td:nth-child(1) {
+  width: 10%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.appendix-sample-table th:nth-child(2),
+.appendix-sample-table td:nth-child(2) {
+  width: 13%;
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.appendix-sample-table th:nth-child(3),
+.appendix-sample-table td:nth-child(3) {
+  width: 77%;
+}
+.qa-cell {
+  font-weight: 700;
+  line-height: 1.25;
+}
+.qa-type {
+  display: block;
+  margin-top: .5mm;
+  color: #475569;
+  font-size: 6.9pt;
+  font-weight: 600;
+}
+.delta-cell {
+  line-height: 1.38;
+}
+.semi-lines span {
+  display: block;
+  line-height: 1.34;
+  margin: 0 0 .7mm;
+}
+.semi-lines span:last-child {
+  margin-bottom: 0;
+}
+.legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 2px;
+  border-radius: 999px;
+  vertical-align: -1px;
+}
+.page-break { break-before: page; page-break-before: always; }
+@media screen {
+  body { margin: 24px auto; box-shadow: 0 8px 36px rgba(15, 23, 42, .12); }
+}
+@media print {
+  body { width: auto; max-width: none; margin: 0; padding: 0; box-shadow: none; }
+  .toolbar { display: none !important; }
+  a { color: inherit; text-decoration: none; }
+}
+</style>
+</head><body>
+<div class="toolbar"><a href="report.html">Full report</a><a href="report_presentation.html">Presentation</a><button type="button" onclick="window.print()">Print A4</button></div>
+<h1>RAPTOR Patent Experiment Report<br><span class='small'>Compact A4 Print Version</span></h1>
+<div class='note'><strong>Purpose.</strong> 이 파일은 발표/제출용 압축본입니다. 전체 QA source overlay, 전체 judge note, 전체 Appendix audit는 full report와 tree visualization에 보존했습니다.</div>
+<h2>Executive Summary</h2>
+<ul>
+<li><strong>Paper main metric:</strong> QASPER식 Answer F1 평균은 <code>dense_bge_m3_without_raptor</code>가 가장 높았습니다 (0.430).</li>
+<li><strong>Accuracy:</strong> Accuracy는 논문 QuALITY식 정답률을 그대로 쓴 것이 아니라, <code>judge_score >= 4</code> 및 <code>supported=true</code> 조건을 만족한 비율입니다.</li>
+<li><strong>BM25:</strong> 질문과 특허 요약 사이에 희귀 전문 용어가 직접 겹칠 때 강했습니다. 이는 semantic reasoning보다 lexical overlap/IDF 효과로 해석하는 것이 맞습니다.</li>
+<li><strong>Summary risk:</strong> Appendix E에서는 summary node에 unsupported claim이 자주 관찰되어, source overlay와 leaf 확인이 필요합니다.</li>
+</ul>
+<h2>Experiment Setup</h2>
+<table><tbody>
+<tr><th>Dataset</th><td>200 patents; -</td></tr>
+<tr><th>Text / metadata</th><td>Index text column: 요약; metadata keeps patent_id, 중분류, 중분류명</td></tr>
+<tr><th>Embedding / clustering</th><td>sentence-transformers; hard clustering, average child size near RAPTOR Appendix C target</td></tr>
+<tr><th>LLM</th><td>gpt-5.5; calls=232; runtime=1h 6m 2s</td></tr>
+<tr><th>Retrieval modes</th><td>bm25_without_raptor, bm25_with_raptor, dense_bge_m3_without_raptor, dense_bge_m3_with_raptor</td></tr>
+</tbody></table>
+<div class='page-break'></div>
+<h2>Core Metrics</h2>
+<table><thead><tr><th>Method</th><th>Answer F1</th><th>Answer Recall</th><th>Accuracy</th><th>Avg Judge Score</th><th>Best count</th></tr></thead><tbody>
+<tr><td>bm25_without_raptor</td><td>0.250</td><td>0.297</td><td>0.500</td><td>2.700</td><td>1</td></tr>
+<tr><td>bm25_with_raptor</td><td>0.405</td><td>0.505</td><td>0.900</td><td>4.600</td><td>7</td></tr>
+<tr><td>dense_bge_m3_without_raptor</td><td>0.430</td><td>0.508</td><td>0.900</td><td>4.500</td><td></td></tr>
+<tr><td>dense_bge_m3_with_raptor</td><td>0.428</td><td>0.535</td><td>0.800</td><td>4.700</td><td>2</td></tr>
+</tbody></table>
+<h3>How to read Core Metrics</h3>
+<table class='metric-guide-table'><thead><tr><th>Metric</th><th>Type</th><th>Meaning</th><th>How to read it</th></tr></thead><tbody>
+<tr><td><code>Answer F1</code></td><td><span class='metric-kind'>Answer</span></td><td>reader 답변과 GPT-5.5 reference answer 사이의 token-overlap F1 평균</td><td>RAPTOR 논문의 QASPER Answer F1에 맞춘 본 실험의 메인 성능 지표입니다.</td></tr>
+<tr><td><code>Answer Recall</code></td><td><span class='metric-kind'>Answer</span></td><td>reference answer token 중 reader 답변에도 등장한 token 비율</td><td>높을수록 reference answer의 핵심 표현을 더 많이 회수했습니다. F1 계산에 사용된 recall입니다.</td></tr>
+<tr><td><code>Accuracy</code></td><td><span class='metric-kind'>Answer</span></td><td><code>judge_score >= 4</code> 이고 <code>supported=true</code>인 QA 비율</td><td>QuALITY식 정답률과 대응시키기 위한 judge 기반 correctness proxy입니다.</td></tr>
+<tr><td><code>Avg Judge Score</code></td><td><span class='metric-kind'>Answer</span></td><td>GPT-5.5 judge가 reference answer와 retrieved context 기준으로 reader 답변을 0-5점 평가한 평균</td><td>Answer F1이 단어 겹침을 보는 한계를 보완하는 보조 품질 지표입니다.</td></tr>
+<tr><td><code>Best count</code></td><td><span class='metric-kind'>Answer</span></td><td>QA별 4개 method 답변 비교에서 GPT-5.5 judge가 best method로 고른 횟수</td><td>높을수록 여러 QA에서 상대적으로 가장 좋은 답변으로 선택됐습니다.</td></tr>
+</tbody></table>
+<h2>Interpretation</h2>
+<table><thead><tr><th>Observation</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td>With RAPTOR 비교</td><td>V3는 leaf-only 검색과 RAPTOR 전체 node 검색을 같은 retriever별로 비교해 summary tree의 기여를 분리합니다.</td></tr>
+<tr><td>Dense retriever 보정</td><td>논문의 DPR 개념은 한/영 특허 데이터에 맞춰 BGE-M3 dense retriever로 대체 해석했습니다.</td></tr>
+<tr><td>BM25는 특정 QA에서 강함</td><td>희귀 단어가 질문과 문서에 직접 겹치면 embedding보다 선명하게 해당 leaf를 끌어올립니다. 그래서 patent query처럼 전문 용어가 많은 데이터에서 baseline 가치가 큽니다.</td></tr>
+<tr><td>Appendix E hallucination risk</td><td>summary node는 압축에는 유용하지만 unsupported claim이 섞일 수 있습니다. 최종 답변 검증에는 leaf/source overlay가 필요합니다.</td></tr>
+</tbody></table>
+<h2>Why BM25 Remains Competitive on Patent Data</h2>
+<p>특허 문서는 기술 용어와 구성요소 명칭이 정밀하게 유지되는 문서 유형입니다. 소설이나 일반 서술형 문서와 달리, 단어 하나가 특정 구조나 기능을 가리키는 식별자처럼 작동하므로 BM25의 lexical matching이 강한 baseline이 됩니다.</p>
+<table><thead><tr><th>Patent text property</th><th>BM25 advantage</th></tr></thead><tbody>
+<tr><td>전문 용어의 희소성</td><td>GEMM, DDR, GaN, 부동 게이트, 정규화 회로처럼 corpus 전체에서 드문 용어는 IDF가 커져 검색 점수를 강하게 끌어올립니다.</td></tr>
+<tr><td>구성요소 명칭의 반복</td><td>특허 요약은 핵심 부품과 동작을 반복 설명하므로 term frequency가 높아지고, 같은 용어가 질문에 있으면 BM25가 뚜렷하게 반응합니다.</td></tr>
+<tr><td>표현의 정밀성</td><td>기술 용어는 자유롭게 치환되기보다 원문 표현이 유지됩니다. 그래서 dense similarity보다 exact-match가 더 직접적인 신호가 될 수 있습니다.</td></tr>
+</tbody></table>
+<p>따라서 본 실험은 RAPTOR가 BM25를 모든 검색 지표에서 일방적으로 압도했다기보다, BM25는 precise lexical retrieval에 강하고 with-RAPTOR 전체 node 검색은 최종 QA 답변 생성에 필요한 summary evidence를 보강하는 상보적 관계로 해석하는 것이 적절합니다.</p>
+<h2>RAPTOR Win Analysis - Representative Cases</h2>
+<p class='small'>With RAPTOR가 without RAPTOR보다 Answer F1, Answer Recall, Accuracy, Judge score 중 하나 이상 좋아진 사례 15개 중 대표 5개입니다. RAPTOR 재현 관점에서는 이 표가 핵심입니다.</p>
+<table class='raptor-win-table'><thead><tr><th>QA</th><th>Ret.</th><th>Ans Δ</th><th>Qual Δ</th><th>Layers</th><th>Top sources</th><th>Why improved</th></tr></thead><tbody>
+<tr><td><span class='qa-cell'>7<span class='qa-type'>local</span></span></td><td>BM25</td><td class='delta-cell'>F1 <strong>+0.651</strong><br>Rec +0.833</td><td class='delta-cell'>Acc +1.000<br>J +4.000</td><td><div class='semi-lines'><span>L0:7, L1:4, L2:1</span></div></td><td><div class='semi-lines'><span>#217 L1 r1</span><span>#144 L0 r2</span><span>#211 L1 r3</span><span>#191 L0 r4</span></div></td><td>답변은 reference answer와 의미적으로 동일하며, retrieved context의 &#x27;누적값 벡터를 수신하고 각 누적값에 함수를 적용해 활성화값 벡터를 생성하는 활성화 회로&#x27;라는 내용으로 직접 뒷받침됩니다.</td></tr>
+<tr><td><span class='qa-cell'>6<span class='qa-type'>local</span></span></td><td>BM25</td><td class='delta-cell'>F1 <strong>+0.285</strong><br>Rec +0.222</td><td class='delta-cell'>Acc +1.000<br>J +4.000</td><td><div class='semi-lines'><span>L0:3, L1:4, L2:1</span></div></td><td><div class='semi-lines'><span>#220 L1 r1</span><span>#224 L1 r2</span><span>#204 L1 r3</span><span>#36 L0 r4</span></div></td><td>답변은 reference answer와 의미적으로 일치합니다. retrieved context에도 &#x27;1차 신경망 로직 회로를 위해 2차 신경망 로직 회로가 양자화 파라미터를 생성&#x27;한다고 명시되어 있어 충분히 뒷받침됩니다.</td></tr>
+<tr><td><span class='qa-cell'>2<span class='qa-type'>global</span></span></td><td>BGE-M3</td><td class='delta-cell'>F1 <strong>+0.207</strong><br>Rec +0.313</td><td class='delta-cell'>Acc +0.000<br>J +1.000</td><td><div class='semi-lines'><span>L1:2, L2:1, L3:2</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#235 L2 r2</span><span>#226 L1 r3</span><span>#222 L1 r4</span></div></td><td>답변은 reference answer의 핵심인 웨이퍼 공정 데이터·결함 데이터 기반 최적 위치/척 유형 결정, 미세 구조를 통한 활성 영역·핀·필러 정밀 분리와 전기적 특성 개선, 패키지 방열 구조를 통한 열 안정성·신뢰성 향상을 모두 의미적으로 정확히 반영한다. retrieved context에도 웨이퍼 공정 최적화,…</td></tr>
+<tr><td><span class='qa-cell'>3<span class='qa-type'>global</span></span></td><td>BM25</td><td class='delta-cell'>F1 <strong>+0.168</strong><br>Rec +0.296</td><td class='delta-cell'>Acc +0.000<br>J +1.000</td><td><div class='semi-lines'><span>L0:1, L1:3, L2:2, L3:1</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#237 L2 r2</span><span>#202 L1 r3</span><span>#209 L1 r4</span></div></td><td>답변은 reference answer의 핵심인 처리 대상/데이터 범위 축소, 컨텍스트·클래스별 적응형 모델 조정, 프록시 모델과 비라벨 샘플링 활용, 얼굴 검출·파레트 기반 동일 인물 검색, 메모리 근접 해밍 비교를 모두 포함한다. retrieved context에도 각 세부 기술과 효과가 명시되어 있어 충분히 뒷받침된…</td></tr>
+<tr><td><span class='qa-cell'>0<span class='qa-type'>global</span></span></td><td>BM25</td><td class='delta-cell'>F1 <strong>+0.164</strong><br>Rec +0.194</td><td class='delta-cell'>Acc +0.000<br>J +1.000</td><td><div class='semi-lines'><span>L0:2, L1:2, L2:1, L3:1</span></div></td><td><div class='semi-lines'><span>#238 L3 r1</span><span>#229 L2 r2</span><span>#200 L1 r3</span><span>#220 L1 r4</span></div></td><td>Answer는 reference answer의 핵심 효과인 오류 허용 범위 내 전압·클록 제어, 양자화·압축에 따른 모델·메모리·연산량 감소, PIM/CIM에 의한 데이터 이동 및 외부 메모리 접근 감소, 칩렛/NoC 기반 작업 분산·라우팅 효율화를 모두 포함한다. retrieved context의 효과 및 구성 요소와…</td></tr>
+</tbody></table>
+<h2>With/Without RAPTOR Delta - Compressed</h2>
+<p class='small'>V3는 같은 retriever에서 leaf-only 검색과 RAPTOR 전체 node 검색을 비교합니다. 아래 값은 10개 QA 평균 차이이며, 논문 메인 표 기준에 맞춰 Answer F1과 Answer Recall을 앞에 둡니다.</p>
+<table class='raptor-delta-table'><thead><tr><th>Ret.</th><th>Without</th><th>With RAPTOR</th><th>Ans Δ</th><th>Qual Δ</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td>BM25</td><td>leaf only</td><td>all nodes</td><td class='delta-cell'>F1 +0.155<br>Rec +0.207</td><td class='delta-cell'>Acc +0.400<br>J +1.900</td><td>summary node가 reference answer와의 표현/내용 overlap을 뚜렷하게 보강했습니다.</td></tr>
+<tr><td>BGE-M3</td><td>leaf only</td><td>all nodes</td><td class='delta-cell'>F1 -0.002<br>Rec +0.027</td><td class='delta-cell'>Acc -0.100<br>J +0.200</td><td>leaf-only 근거가 더 직접적인 QA가 섞여 있습니다.</td></tr>
+</tbody></table>
+<h2>Global/Local Split - Answer F1</h2>
+<p class='small'>각 QA 유형은 5개뿐인 pilot sample이므로 통계적으로 강한 결론보다는 방향성 확인으로 해석해야 합니다.</p>
+<table class='split-table'><thead><tr><th>Retriever</th><th>Global<br>without</th><th>Global<br>with</th><th>Local<br>without</th><th>Local<br>with</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td>BM25</td><td>0.289</td><td>0.399</td><td>0.211</td><td>0.411</td><td>Global과 Local 모두에서 RAPTOR all-node 검색이 Answer F1을 높였습니다.</td></tr>
+<tr><td>BGE-M3</td><td>0.292</td><td>0.393</td><td>0.568</td><td>0.463</td><td>Global QA에서는 summary/all-node가 유리하지만, Local QA에서는 특정 patent detail을 leaf에서 직접 찾는 조건이 더 강했습니다. 전체 평균은 이 상반된 효과를 가립니다.</td></tr>
+</tbody></table>
+<div class='page-break'></div>
+<h2>Appendix E Summary</h2>
+<table><tbody>
+<tr><th>Audited summary nodes</th><td>12</td></tr>
+<tr><th>Unsupported claim detected</th><td>1 / 12 (0.083)</td></tr>
+<tr><th>Severity mix</th><td>minor=1, none=11</td></tr>
+<tr><th>상위 노드 전파 여부</th><td>본 audit 범위에서는 환각 증상이 상위 노드로 전파되지 않았습니다. 탐지된 unsupported claim은 하위 summary node에서만 관찰되었고, 감사한 상위 parent node로 같은 환각 claim이 전파된 증거는 없었습니다.</td></tr>
+</tbody></table>
+<table class='appendix-sample-table'><thead><tr><th>Node</th><th>Severity</th><th>Representative unsupported claim</th></tr></thead><tbody>
+<tr><td>218</td><td>minor</td><td>&#x27;물리 시뮬레이션 가속 기술&#x27;이라는 표현은 child text의 탄화수소 저장소 모델링 설명에서 명시적으로 뒷받침되지 않습니다. child text는 머신러닝으로 역연산자를 근사해 저장소를 시뮬레이션한다고만 하며, 시뮬레이션을 가속한다는 효과나 목적은 직접 언급하지 않습니다.</td></tr>
+</tbody></table>
+<h2>Visualization</h2>
+<p class='small'>With RAPTOR는 source node와 ancestor path를 mini-tree로, without RAPTOR는 같은 질문의 ranked leaf retrieval strip으로 표시했습니다. 원 안의 숫자는 retrieval rank입니다.</p>
+<table><thead><tr><th>QA</th><th>Compared conditions in Visualization</th><th>Most useful condition</th><th>Why</th></tr></thead><tbody>
+<tr><td>QA 0</td><td>dense_bge_m3_with_raptor, dense_bge_m3_without_raptor</td><td><strong>dense_bge_m3_with_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.392, answer_recall=0.542</span></td><td>reference answer의 핵심 요소인 오류 허용 범위 기반 전압·클록 조정, 양자화·압축에 따른 모델/메모리/연산량 감소, PIM/CIM을 통한 데이터 이동 및 외부 메모리 접근 감소, 칩렛/NoC 기반 병렬 작업 분산 효과를 가장 균형 있게 포함한다. retrieved context에도 해당 요소들이 직접적으로…</td></tr>
+<tr><td>QA 1</td><td>bm25_with_raptor, bm25_without_raptor</td><td><strong>bm25_with_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.281, answer_recall=0.443</span></td><td>reference answer의 핵심 요소인 지식 그래프 기반 후보 축소, 웹 콘텐츠 기반 리스트형 답변 생성, 문맥 압축을 통한 LLM 입력량 감소, 이미지 코드의 해밍 비교 가속을 모두 포함하고, retrieved context에도 해당 기술 묶음과 효과가 근거로 제시되어 있어 가장 충실하고 근거성이 높다.</td></tr>
+<tr><td>QA 8</td><td>dense_bge_m3_with_raptor, dense_bge_m3_without_raptor, bm25_with_raptor</td><td><strong>dense_bge_m3_without_raptor</strong><br><span class='small'>score 5/5, supported=true, answer_f1=0.333, answer_recall=0.421</span></td><td>reference answer와 거의 동일하게, 센서 데이터 분석으로 결정된 구성 데이터가 식별한 각 동작을 수행하도록 이벤트가 생성되며, 이 이벤트가 해당 동작과 연관된 AI 모델 실행을 트리거한다는 핵심을 정확히 답했습니다. retrieved context에도 동일한 원문 근거가 직접 포함되어 있습니다.</td></tr>
+</tbody></table>
+<div class='page-break'></div>
+<div class="tree-case">
+<h3>QA 0 | GLOBAL Global cross-patent | Dense global success: summary-heavy evidence</h3>
+<p>신경망 시스템의 전력 효율을 높이기 위해 전압·클록 제어, 양자화, PIM/CIM 연산, 칩렛/NoC 스케줄링 기술을 함께 적용하면 어떤 종합 효과를 기대할 수 있는가?</p>
+<div class='tree-meta'><span class="tag">method=dense_bge_m3_with_raptor</span><span class="tag">score=5</span><span class="tag">supported=True</span><span class="tag">hit/rank=1/1</span><span class="tag">sources=5</span><span class="tag">path nodes=14</span></div>
+<div class='usefulness best'><strong>Usefulness:</strong> Recommended <span class='small'>best=dense_bge_m3_with_raptor</span><br>이 QA에서 GPT-5.5 judge가 가장 쓸만한 조건으로 선택했습니다 (score 5/5, supported=true, answer_f1=0.39, answer_recall=0.54, hit=yes).</div>
+<div class='note tree-note small'>With RAPTOR searches the flattened RAPTOR tree, so retrieved sources can be leaf patents or higher summary nodes.</div>
+<svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 395.0 26.0 C 395.0 57.6, 282.7 64.7, 282.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 507.3 64.7, 507.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 96.3 C 282.7 128.0, 507.3 135.0, 507.3 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 96.3 C 282.7 128.0, 282.7 135.0, 282.7 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+</g><g>
+<g transform="translate(282.7,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(395.0,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(507.3,96.3)">
+<title>#236 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#236</text>
+</g>
+<g transform="translate(507.3,166.7)">
+<title>#212 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#212</text>
+</g>
+<g transform="translate(282.7,166.7)">
+<title>#228 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#228</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#238</td><td>L3</td><td>이 특허 묶음은 AI·신경망 처리, 메모리 중심 연산, 반도체 패키징, 검색·질의응답, 영상·이미지 처리, SoC/NoC 제어 기술을 포괄한다. 핵심 기술 - 신경망 실행 결과의 오류율을 비교해 <span class="evidence-hit ev1" title="also appears in answer">전압·클록</span> 등 전력 설정을 조정하는 전력 관리 기술 - 신경망 파라미터 양자화, 바이너리 뉴럴넷 학습, 모델 압축, LSTM·AI 프로세서 데이터 경로 양자화 기술 - VPU, SIMD, DMA 시퀀서, GEMM·컨볼루션 버퍼링, 시스톨릭 어레이, PE 배열 등 신경망 가속기 구조 - <span class="evidence-hit ev1" title="also appears in answer">PIM/CIM</span> 기반 메모리 내부 또는 인접 연산, 메모리 요청 스케줄링, 온칩 데이터 이동 제어 기술 - 3D/2.5D 패키징, 칩렛, 메모리 다이·로직 다이 결합, 인터포저 및 열 관리 구조 - 검색 질의 관련도 산정, 센서 데이터 분류, 지식 그래프 생성, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 압축 기술 - 웨이퍼 공정 수율·결함 데이터를 이용한 최적 위치 결정 및 척 유형 결정 기술 - 포인트 클라우드 기반 3차원 객체 인지 모델을 영상 컨텍스트와 객체 클래스별 앵커 박스에 맞게 학습하는 기술 - 이미지 분류용 프록시 모델 학습, 동일 인물 이미지 검색, 이미지 코드의 해밍 비교 처리 기술 - ASIC/SoC/NoC에서 암호화폐 채굴, 외부 트래픽 제어, ECC 처리, NoC 라우팅, 자율주행차용 칩렛 워크로드 스케줄링, ML 가속기 구성을 수행하는 기술 목적 - 허용 가능한 오류 범위 내에서 신경망 전력 효율을 높이는 것 - 모델 크기, 메모리 사용량, 데이터 이동량, 연산량을 줄이는 것 - 메모리 내부 연산과 병렬 처리를 통해 AI·그래픽·데이터베이스·머신러닝 작업을 가속하는 것 - 멀티레인 AI 시스템, DMA, 메모리 접근, 칩렛 간 작업 분산을 <span class="evidence-hit ev1" title="also appears in answer">효율적으로</span> 제어하는 것 - 영상 생성·복원, 객체 인지, 이미지 검색 및 이미지 코드 비교 성능을 높이는 것 - 검색·질의응답·지식 그래프·언어모델 입력 처리에서 관련 정보 추출과 응답 생성을 효율화하는 것 - 반도체 공정, 웨이퍼 위치, 패키지 구조, 메모리 신뢰성 및 열 특성을 개선하는 것 주요 구성 요소 - 오류율 산정 절차, 애플리케이션 오류 허용치, <span class="evidence-hit ev1" title="also appears in answer">전압·클록</span> 제어부 - 레인별 오케스트레이터, 상위 오케스트레이터, 활성 컴포넌트 제어 구조 - VPU 데이터 경로, SIMD 레인, min/max 수집기, DMA 시퀀서, 로드·스토어·퍼뮤트 로직 - 메모리 컨트롤러, PIM 명령 큐, 뱅크 상태 테이블, RAS 매니저, 센스 앰프, compute component - PE 배열, 시스톨릭 어레이, GEMM/MAC 가속기, GPU 칩렛, 커널 디스패치 패킷 - 메모리 다이, 로직 다이, 인터포저, 재배선층, 브릿지 칩, 열전도층 및 열절연 구조 - 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, AI 모델, 지식 그래프 노드·엣지, 이진 임베딩 벡터 - BiLSTM, Transformer, 어텐션 풀링, 후보 문맥, 목표 문맥, 프롬프트 정보 - 웨이퍼 공정 데이터, 결함 데이터, 학습된 AI 모델, 척 유형, 이탈 범위 - 3차원 영상 데이터, 영상 컨텍스트, 객체 그룹, 객체 클래스별 앵커 박스 - 얼굴 검출 모듈, 파레트 데이터 생성 모듈, 이미지 출력 모듈, 해밍 처리 유닛 또는 메모리 컨트롤러 - NoC, 컨트롤 다이, 해시 다이, ECC 처리 회로, 목적지 ID 매퍼, 센서 데이터 입력 칩렛, 캐시 메모리, ML 가속 코어 효과 - 신경망 전력 설정을 오류 허용 범위 안에서 유지·조정해 전력 효율을 높일 수 있다. - <span class="evidence-hit ev1" title="also appears in answer">양자화·압축·희소성</span> <span class="evidence-hit ev1" title="also appears in answer">활용으로</span> 메모리 사용량, 대역폭, 추론 연산량...</td><td>-</td></tr>
+<tr><td>2</td><td>#233</td><td>L2</td><td>이 특허 묶음은 메모리 중심 연산, PIM/CIM, <span class="evidence-hit ev2" title="also appears in answer">신경망</span> 가속기, 3D/2.5D 반도체 패키징, 분산 병렬 처리 및 머신러닝 학습 효율화 기술을 포괄한다. 핵심 기술은 메모리 내부 또는 메모리 인접 회로에서 <span class="evidence-hit ev2" title="also appears in answer">연산을</span> 수행하는 PIM/CIM 구조, DMA 및 온칩 데이터 이동 제어, 메모리 요청 스케줄링, <span class="evidence-hit ev2" title="also appears in answer">신경망</span> 연산용 PE·시스톨릭 어레이·GEMM·MAC 가속기, 뉴로모픽 모듈, GPU/칩렛 기반 병렬 처리, 분산 학습 자원 할당, 모델 압축·양자화·암호화, 반도체 공정 이상 감지 및 3D 적층 패키징이다. 주요 구성 요소로는 메모리 컨트롤러, PIM 명령 큐, 뱅크 상태 테이블, RAS 매니저, DMA 엔진, 데이터플로우 개스킷, 메모리 풀 API, 연산용 메모리 셀 어레이, 센스 앰프, compute component, PE 배열, 시스톨릭 어레이, 재구성 가능한 GEMM 어레이, GPU 칩렛, 커널 디스패치 패킷, 뉴로시냅틱 모듈, NPU 스케줄러, 3D 메모리 다이, 인터포저, 재배선층, 브릿지 칩, 열전도층 및 열절연 구조가 제시된다. 목적은 CPU와 메모리 사이의 데이터 이동을 <span class="evidence-hit ev2" title="also appears in answer">줄이고</span>, 메모리 내부 연산과 병렬 처리를 통해 <span class="evidence-hit ev2" title="also appears in answer">신경망</span>·그래픽·머신러닝 작업을 가속하며, 메모리 접근·DMA 전송·작업 스케줄링·주소 변환을 효율화하는 것이다. 또한 3D 적층 및 칩렛 구조를 통해 대역폭, 열 관리, 집적도, 설계 유연성을 높이고, 분산 학습과 모델 압축을 통해 학습 시간과 자원 사용을 줄이는 데 초점이 있다. 효과로는 데이터 전송량 및 외부 메모리 접근 감소, 연산 성능 향상, <span class="evidence-hit ev2" title="also appears in answer">에너지</span> 효율 개선, 메모리 대역폭 절감, 병렬 처리 효율 증가, PIM/CIM 명령 처리 가속, DMA 및 칩렛 작업 분산 수행, <span class="evidence-hit ev2" title="also appears in answer">신경망</span> <span class="evidence-hit ev2" title="also appears in answer">연산의</span> 양자화·희소성 활용, 반도체 공정 검증 및 이상 감지 자동화, 패키지 열 특성 개선, 메모리 소자의 신뢰성 및 오류 정정 성능 향상이 기대된다.</td><td>-</td></tr>
+<tr><td>3</td><td>#228</td><td>L1</td><td>이 특허 묶음은 주로 신경망 가속, <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 중심 연산, 분산/병렬 처리, 데이터 전송 효율화를 위한 하드웨어 및 시스템 기술에 관한 것이다. 핵심 기술은 네트워크로 연결된 복수의 컴퓨트 노드가 공유 글로벌 가상 주소 공간을 갖는 확장 <span class="evidence-hit ev3" title="also appears in answer">메모리</span>를 통해 파이프라인 병렬 처리를 수행하는 구조, 병목 계층 신경망 연산에서 부분 컨볼루션 결과를 활용해 외부 <span class="evidence-hit ev3" title="also appears in answer">메모리</span> <span class="evidence-hit ev3" title="also appears in answer">접근을</span> 줄이는 구조, 시스톨릭 어레이 기반 신경망 가속기에서 음성 데이터를 문장 단위로 분리·벡터화해 병렬 처리하는 방법 등을 포함한다. 또한 어텐션 계층에서 어텐션 서브레이어와 피드포워드 서브레이어를 병렬 배치한 신경망 구조, 복수의 프로세서 칩렛과 입출력 회로를 결합한 3D 적층 처리 시스템, <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 내부에서 비트 벡터 연산을 수행하는 PIM 장치, 동형암호 데이터의 저장 공간 및 I/O <span class="evidence-hit ev3" title="also appears in answer">대역폭</span>을 줄이기 위한 암호문 블록 처리 방식이 제안된다. 구성 요소로는 컴퓨트 노드, 확장 <span class="evidence-hit ev3" title="also appears in answer">메모리</span>, 신경망 가속기, 시스톨릭 어레이, 어텐션 신경망, 프로세서 칩렛, PIM 가능 <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 장치, 사이드밴드 채널, 고정 기능 회로 기반 하드웨어 가속기, 링 토폴로지로 연결된 디바이스 스택, 변환 <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 컨트롤러, 네트워크 어댑터 장치 등이 포함된다. 목적은 신경망 및 데이터 처리 과정에서 병렬성을 높이고, <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 접근과 데이터 이동을 줄이며, 하드웨어 <span class="evidence-hit ev3" title="also appears in answer">자원을</span> 효율적으로 활용하는 것이다. 특히 외부 <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 접근 감소, 연산과 임시 저장소의 근접 배치, 고대역폭·저전력 3D 적층 구조, <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 내 연산, 링 토폴로지를 통한 다중 작업 병렬 수행 등이 강조된다. 기대 효과는 처리 성능 향상, 에너지 <span class="evidence-hit ev3" title="also appears in answer">효율</span> 개선, <span class="evidence-hit ev3" title="also appears in answer">메모리</span> 및 I/O <span class="evidence-hit ev3" title="also appears in answer">대역폭</span> 절감, 저장 공간 감소, 다양한 신경망 연산의 하드웨어 실행 가능성 확대, 복수의 머신러닝 작업 병렬 처리, 패킷 지연 이벤트 데이터의 조건 기반 샘플링 지원이다.</td><td>-</td></tr>
+<tr><td>4</td><td>#212</td><td>L1</td><td>이 특허 묶음은 신경망 및 뉴로모픽 <span class="evidence-hit ev4" title="also appears in answer">연산</span>을 위한 하드웨어 구조, 메모리/스케줄링 방식, 병렬 처리, 정밀도 <span class="evidence-hit ev4" title="also appears in answer">제어</span>, 모델 그래프 처리 및 응용 기술에 관한 것이다. 핵심 기술은 시간분할 다중화 기반 뉴로시냅틱 모듈, 뉴럴 네트워크 프로세싱 유닛, NPU 스케줄러, 프로세싱 엘리먼트 어레이, 다중 <span class="evidence-hit ev4" title="also appears in answer">GPU</span> 신경망 분기 최적화, 가중치 <span class="evidence-hit ev4" title="also appears in answer">양자화</span>, 가변 정밀도 곱셈기, 확장 메모리 통신 서브시스템 등을 포함한다. <span class="evidence-hit ev4" title="also appears in answer">입력</span> 피처맵, 커널, 웨이트, 인풋 액티베이션, 뉴런 속성, 발화 이벤트, 그래프 정보 등을 저장·전달·연산하기 위한 구성이 제시된다. 구체적으로, 뉴로시냅틱 모듈은 복수 뉴런의 속성과 시간 단계별 발화 이벤트를 유지하고, 각 시간 단계에서 발화 이벤트를 시간분할 다중화 방식으로 통합한 뒤 뉴런 속성을 병렬로 업데이트한다. 뉴럴 네트워크 프로세싱 유닛은 인스트럭션 메모리, 데이터 메모리, 데이터 플로우 엔진, 컨트롤 플로우 엔진 및 수행 유닛을 포함하며, 데이터 준비가 완료된 태스크의 순서에 따라 태스크 실행을 제어한다. 또한 <span class="evidence-hit ev4" title="also appears in answer">입력</span> 피처맵과 커널의 컨벌루션을 수행하여 중간 피처맵을 생성하고, 태그 정보에 기초하여 후처리 유닛을 결정하는 방법이 개시된다. 프로세싱 유닛들이 공유할 오퍼랜드를 <span class="evidence-hit ev4" title="also appears in answer">입력</span> 피처맵의 픽셀값 또는 커널의 웨이트값 중 하나로 결정하고, 이를 기초로 병렬화된 <span class="evidence-hit ev4" title="also appears in answer">연산</span>을 수행하는 뉴럴 네트워크 장치도 포함된다. 다중 <span class="evidence-hit ev4" title="also appears in answer">GPU</span> 시스템과 관련해서는 신경망 및 <span class="evidence-hit ev4" title="also appears in answer">GPU</span> 정보를 포함하는 기반 정보를 수집하고, 신경망을 주 GPU에서 처리되는 주 신경망과 보조 GPU에서 처리되는 보조 신경망을 포함하는 트리 구조 신경망으로 변환한 뒤, 기반 정보에 기초하여 이를 최적화하는 방법이 제시된다. 정밀도 및 데이터 처리와 관련해서는, 웨이트와 인풋 액티베이션을 이용해 모드 신호와 오버플로우/언더플로우 여부에 따라 서로 다른 정밀도로 곱셈을 수행하는 플렉서블 멀티플라이어와 새츄레이팅 애더가 개시된다. 가중치 데이터 처리 방법은 가중치 값의 범위를 복수 구간으로 나누어 가중치 레벨에 대응시키는 레벨링 가중치 데이터를 생성하여, 하드웨어 기반 인공 신경망 <span class="evidence-hit ev4" title="also appears in answer">연산</span> 장치 구현을 위해 가중치 데이터 값의 수를 줄이는 것을 포함한다. 그 밖에, 비휘발성 메모리에 저장된 제1 모델의 그래프와 휘발성 메모리에 저장된 다른 모델의 그래프 중 대응 그래프를 식별하고 이를 기반으로 제1 모델 <span class="evidence-hit ev4" title="also appears in answer">제어</span> 인스턴스를 획득하는 전자 장치, 신경망 모델 형태의 운영체제를 구성하여 뉴로모픽 컴퓨팅 시스템에 탑재하는 방법, 훈련된 신경망을 이용한 위변조 탐지, 확장 메모리 <span class="evidence-hit ev4" title="also appears in answer">연산</span>을 위한 통신 서브시스템, 행/열 메모리와 주소 생성 방식을 이용해 서로 다른 형태의 콘볼루션 <span class="evidence-hit ev4" title="also appears in answer">연산</span>을 지원하는 병렬 프로세서, 고정소수점 변환을 이용한 내적 계산, 데이터 통신 모드 결정기, SIMD 방식 벡터 프로세서와 행렬 곱셈 유닛을 포함하는 특수 목적 하드웨어 칩, 및 현재 실행 작업과 대기 실행 작업에 대한 로드/스토어 작업을 수행하는 인공지능 코어가 포함된다.</td><td>-</td></tr>
+<tr><td>5</td><td>#236</td><td>L2</td><td>이 특허 묶음은 ASIC, SoC, <span class="evidence-hit ev5" title="also appears in answer">NoC</span> 기반 집적회로에서 분산원장 상호작용, 외부 트래픽 제어, 메모리 대상 트랜잭션의 ECC 처리, <span class="evidence-hit ev5" title="also appears in answer">NoC</span> <span class="evidence-hit ev5" title="also appears in answer">라우팅</span>, 자율주행차용 <span class="evidence-hit ev5" title="also appears in answer">칩렛</span> SoC의 워크로드 <span class="evidence-hit ev5" title="also appears in answer">스케줄링</span>, ML 가속기 SoC 구성을 다룬다. 핵심 기술은 다수의 해시 다이와 이를 제어하는 컨트롤 다이를 하나의 집적회로 패키지에 통합한 암호화폐 채굴용 ASIC, 신뢰되지 않은 외부 장치로부터 수신되는 외부 트래픽 양을 감시하고 트래픽 정책 위반을 검출하면 해당 외부 장치의 메시지로 인해 NoC에 발생하는 트래픽을 줄이는 호스트 SoC, 메모리 대상 읽기·쓰기 트랜잭션을 수신해 ECC 데이터를 계산하고 메모리 컨트롤러로 나가는 트랜잭션을 제공하는 <span class="evidence-hit ev5" title="also appears in answer">NoC</span> 기반 IC이다. 또한 SoC의 <span class="evidence-hit ev5" title="also appears in answer">NoC</span> <span class="evidence-hit ev5" title="also appears in answer">라우팅</span>에서는 매퍼가 트랜잭션의 목적지 ID를 식별하며, 하드웨어 요소가 목적지 ID를 제공하면 주소 맵을 우회하고, 목적지 ID가 제공되지 않으면 트랜잭션의 주소를 이용해 목적지 ID를 식별한다. 자율주행차용 <span class="evidence-hit ev5" title="also appears in answer">칩렛</span> 기반 SoC는 중앙 <span class="evidence-hit ev5" title="also appears in answer">칩렛</span>과 센서 데이터 입력 <span class="evidence-hit ev5" title="also appears in answer">칩렛</span>을 포함하고, 센서 데이터 입력 <span class="evidence-hit ev5" title="also appears in answer">칩렛</span>이 차량 센서로부터 수신한 센서 데이터를 <span class="evidence-hit ev5" title="also appears in answer">캐시</span> 메모리에 저장하면 <span class="evidence-hit ev5" title="also appears in answer">스케줄링</span> 프로그램이 <span class="evidence-hit ev5" title="also appears in answer">캐시</span>에 저장된 센서 데이터에 적어도 부분적으로 기초해 병렬 워크로드 파이프라인의 워크로드 실행을 스케줄링한다. ML 가속기 SoC는 ML 가속 코어들의 세트, <span class="evidence-hit ev5" title="also appears in answer">NoC</span>, 추론용 비디오 후처리 모듈, 비디오 디코더를 포함한다.</td><td>-</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Answer with node evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev1'>#238</span></span><span class='evidence-chip'><span class='evidence-hit ev4'>#212</span></span><span class='evidence-chip'><span class='evidence-hit ev5'>#236</span></span><span class='evidence-chip'><span class='evidence-hit ev2'>#233</span></span><span class='evidence-chip'><span class='evidence-hit ev3'>#228</span></span></div>
+<p class='answer-text'><span class="evidence-hit ev1" title="#238">전압·클록</span> <span class="evidence-hit ev4" title="#212">제어</span>, <span class="evidence-hit ev4" title="#212">양자화</span>, <span class="evidence-hit ev1" title="#238">PIM/CIM</span> <span class="evidence-hit ev4" title="#212">연산</span>, <span class="evidence-hit ev5" title="#236">칩렛</span>/<span class="evidence-hit ev5" title="#236">NoC</span> 스케줄링을 함께 적용하면 <span class="evidence-hit ev2" title="#233">신경망</span> 시스템 전반에서 다음과 같은 종합 효과를 기대할 수 있다. 허용 가능한 오류 범위 안에서 전압과 클록을 조정해 불필요한 전력 소모를 <span class="evidence-hit ev2" title="#233">줄이고</span>, <span class="evidence-hit ev1" title="#238">양자화·압축·희소성</span> <span class="evidence-hit ev1" title="#238">활용으로</span> 모델 크기, <span class="evidence-hit ev3" title="#228">메모리</span> 사용량, <span class="evidence-hit ev3" title="#228">대역폭</span>, 추론 연산량을 줄일 수 있다. 또한 <span class="evidence-hit ev1" title="#238">PIM/CIM</span> 기반 <span class="evidence-hit ev3" title="#228">메모리</span> 내부 또는 인접 <span class="evidence-hit ev2" title="#233">연산을</span> 통해 CPU와 <span class="evidence-hit ev3" title="#228">메모리</span> 사이의 데이터 이동 및 외부 <span class="evidence-hit ev3" title="#228">메모리</span> <span class="evidence-hit ev3" title="#228">접근을</span> 줄여 <span class="evidence-hit ev2" title="#233">에너지</span> <span class="evidence-hit ev3" title="#228">효율</span>과 처리 성능을 높일 수 있다. 여기에 <span class="evidence-hit ev5" title="#236">칩렛</span> 및 <span class="evidence-hit ev5" title="#236">NoC</span> 스케줄링을 결합하면 여러 ML 가속 코어, <span class="evidence-hit ev4" title="#212">GPU</span> <span class="evidence-hit ev5" title="#236">칩렛</span>, 센서 <span class="evidence-hit ev4" title="#212">입력</span> <span class="evidence-hit ev5" title="#236">칩렛</span>, <span class="evidence-hit ev5" title="#236">캐시</span> <span class="evidence-hit ev3" title="#228">메모리</span>, <span class="evidence-hit ev5" title="#236">NoC</span> <span class="evidence-hit ev5" title="#236">라우팅</span> <span class="evidence-hit ev3" title="#228">자원을</span> <span class="evidence-hit ev1" title="#238">효율적으로</span> 분산 제어할 수 있어 병렬 처리 <span class="evidence-hit ev3" title="#228">효율</span>이 증가한다. 결과적으로 <span class="evidence-hit ev2" title="#233">신경망</span> <span class="evidence-hit ev2" title="#233">연산의</span> 전력 <span class="evidence-hit ev3" title="#228">효율</span>, <span class="evidence-hit ev3" title="#228">메모리</span> <span class="evidence-hit ev3" title="#228">대역폭</span> <span class="evidence-hit ev3" title="#228">효율</span>, 데이터 이동 <span class="evidence-hit ev3" title="#228">효율</span>, 작업 분산 <span class="evidence-hit ev3" title="#228">효율</span>이 함께 개선되고, 고성능·저전력 <span class="evidence-hit ev2" title="#233">신경망</span> 처리 시스템 구현이 가능해진다.</p>
+<p class='small'>위 node table의 형광펜은 retrieved source의 retrieval/evidence cue를 표시합니다. Answer의 형광 밑줄은 그중 실제 답변 문장에 반영된 표현을 같은 node 색으로 연결한 것입니다.</p>
+</div>
+<div class='without-comparison'>
+<div class='without-visual-head'>
+<h4>Same query without RAPTOR</h4>
+<div class='tree-meta'><span class="tag">method=dense_bge_m3_without_raptor</span><span class="tag">score=4</span><span class="tag">supported=True</span><span class="tag">hit/rank=1/9</span><span class="tag">sources=16</span><span class="tag">view=ranked leaf retrieval</span></div>
+<div class='usefulness usable'><strong>Usefulness:</strong> Usable, but not best <span class='small'>best=dense_bge_m3_with_raptor</span><br>답변은 사용 가능하지만 best 조건인 dense_bge_m3_with_raptor보다 덜 완전합니다 (score 4/5, supported=true, answer_f1=0.25, answer_recall=0.32, hit=yes).</div>
+<div class='note tree-note small'>동일 질문과 동일 retriever에서 RAPTOR summary node를 제거하고 leaf patent만 검색한 결과입니다. Tree overlay 대신 ranked leaf evidence로 비교합니다.</div>
+<svg class="mini-tree" viewBox="0 0 760 112" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="55.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+</g><g>
+<g transform="translate(657.1,52.0)">
+<title>#84 L0 18-027074</title>
+<circle r="5.2" fill="#dc2626" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">8</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">18-027074</text>
+</g>
+<g transform="translate(507.3,52.0)">
+<title>#23 L0 18-198579</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">18-198579</text>
+</g>
+<g transform="translate(432.4,52.0)">
+<title>#36 L0 2020-0112148</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2020-0112148</text>
+</g>
+<g transform="translate(357.6,52.0)">
+<title>#154 L0 15-786346</title>
+<circle r="5.2" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">15-786346</text>
+</g>
+<g transform="translate(582.2,52.0)">
+<title>#147 L0 2022-0077390</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0077390</text>
+</g>
+<g transform="translate(132.9,52.0)">
+<title>#182 L0 18-328852</title>
+<circle r="5.2" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">18-328852</text>
+</g>
+<g transform="translate(282.7,52.0)">
+<title>#156 L0 15-851449</title>
+<circle r="5.2" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">15-851449</text>
+</g>
+<g transform="translate(207.8,52.0)">
+<title>#6 L0 16-553537</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">16-553537</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved leaf</span></div>
+</div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#182</td><td>L0</td><td>Chiplet aware adaptable <span class="evidence-hit ev1" title="also appears in answer">quantization</span>. A chiplet-based architecture may quantize, or reduce, the number of <span class="evidence-hit ev1" title="also appears in answer">bits</span> at various stages of the data path in an artificial-intelligence processor. This architecture may leverage the synergy between quantizing multiple dimensions together to greatly decrease the <span class="evidence-hit ev1" title="also appears in answer">memory</span> usage and data path <span class="evidence-hit ev1" title="also appears in answer">bandwidth</span>. Internal weights may be quantized statically after a training procedure. Accumulator <span class="evidence-hit ev1" title="also appears in answer">bits</span> and activation <span class="evidence-hit ev1" title="also appears in answer">bits</span> may be quantized dynamically during an inference <span class="evidence-hit ev1" title="also appears in answer">operation</span>. New hardware logic may be configured to quantize the outputs of each <span class="evidence-hit ev1" title="also appears in answer">operation</span> directly from the core or other processing node before the tensor is stored in <span class="evidence-hit ev1" title="also appears in answer">memory</span>. <span class="evidence-hit ev1" title="also appears in answer">Quantization</span> may use a statistic from a previous tensor for a current output tensor, while also calculating a statistic to be used on a subsequent output tensor. In addition to quantizing based on a statistic, <span class="evidence-hit ev1" title="also appears in answer">bits</span> can be further quantized using a Kth percentile clamping <span class="evidence-hit ev1" title="also appears in answer">operation</span>.</td><td>18-328852</td></tr>
+<tr><td>2</td><td>#6</td><td>L0</td><td><span class="evidence-hit ev2" title="also appears in answer">Spiking</span> <span class="evidence-hit ev2" title="also appears in answer">neural</span> <span class="evidence-hit ev2" title="also appears in answer">unit</span></td><td>16-553537</td></tr>
+<tr><td>3</td><td>#156</td><td>L0</td><td>Inline ecc function for system-on-chip. An example integrated circuit (IC) includes a network-on-chip (<span class="evidence-hit ev3" title="also appears in answer">NoC</span>), a master device coupled to the <span class="evidence-hit ev3" title="also appears in answer">NoC</span>, a memory controller coupled to the <span class="evidence-hit ev3" title="also appears in answer">NoC</span> configured to control a memory coupled to the IC, and an inline error-correcting code (ECC) circuit coupled to the <span class="evidence-hit ev3" title="also appears in answer">NoC</span>. The ECC circuit is configured to receive read and write transactions from the master device that target the memory, compute ECC data based on the read and write transactions, and provide outgoing transactions to the memory controller.</td><td>15-851449</td></tr>
+<tr><td>4</td><td>#154</td><td>L0</td><td>Software-defined buffer/transposer for general matrix multiplication in a programmable ic. Methods and apparatus are described for simultaneously buffering and reformatting (e.g., transposing) a matrix for high-speed data streaming in general matrix multiplication (<span class="evidence-hit ev4" title="also appears in answer">GEMM</span>), which may be implemented by a programmable integrated circuit (IC). Examples of the present disclosure increase the effective double data rate (DDR) memory throughput for streaming data into <span class="evidence-hit ev4" title="also appears in answer">GEMM</span> digital signal processing (DSP) engine multifold, as well as eliminate slow data reformatting on a host central processing unit (CPU). This may be accomplished through software-defined (e.g., C++) data structures and access patterns that result in hardware logic that simultaneously buffers and reorganizes the data to achieve linear DDR addressing.</td><td>15-786346</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Without RAPTOR answer with leaf evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev1'>#182</span></span><span class='evidence-chip'><span class='evidence-hit ev3'>#156</span></span><span class='evidence-chip'><span class='evidence-hit ev4'>#154</span></span></div>
+<p class='answer-text'>제공된 문맥만으로는 “전압·클록 제어”의 효과까지는 판단하기에 불충분합니다. 다만 문맥에 나온 기술들을 함께 보면, <span class="evidence-hit ev1" title="#182">양자화</span>는 <span class="evidence-hit ev1" title="#182">비트</span> 수를 줄여 <span class="evidence-hit ev1" title="#182">메모리</span> 사용량과 데이터 경로 <span class="evidence-hit ev1" title="#182">대역폭</span>을 크게 낮출 수 있고, PIM/CIM <span class="evidence-hit ev1" title="#182">연산</span>은 <span class="evidence-hit ev1" title="#182">메모리</span> 근처 또는 <span class="evidence-hit ev1" title="#182">메모리</span> 내부에서 <span class="evidence-hit ev1" title="#182">연산</span>을 수행해 <span class="evidence-hit ev1" title="#182">메모리</span> 트래픽과 <span class="evidence-hit ev1" title="#182">연산</span> 효율을 개선할 수 있습니다. 또한 칩렛/3D 적층 구조와 <span class="evidence-hit ev3" title="#156">NoC</span> 기반 구성, NPU 스케줄링은 높은 <span class="evidence-hit ev1" title="#182">메모리</span> <span class="evidence-hit ev1" title="#182">대역폭</span>, 낮은 전력 소모, 작은 폼팩터, 데이터 지역성 기반 제어를 기대하게 합니다. 따라서 종합적으로는 <span class="evidence-hit ev1" title="#182">메모리</span> 접근량과 데이터 이동 비용 감소, <span class="evidence-hit ev1" title="#182">대역폭</span> 효율 향상, <span class="evidence-hit ev4" title="#154">GEMM</span>/신경망 <span class="evidence-hit ev1" title="#182">연산</span> 처리량 증가, PIM/CIM 기반 <span class="evidence-hit ev1" title="#182">연산</span> 효율 향상, 그리고 전체 AI 처리 시스템의 전력 효율 개선을 기대할 수 있습니다. 다만 전압·클록 제어와의 결합 효과는 문맥에 직접 근거가 없습니다.</p>
+<p class='small'>위 leaf table의 모든 행은 retrieved leaf입니다. Table 형광펜은 retrieval/evidence cue이고, Answer 형광 밑줄은 실제 답변 문장에 반영된 표현을 같은 leaf 색으로 연결한 것입니다. with RAPTOR와 달리 상위 summary node 없이 leaf patent만 근거로 사용했습니다.</p>
+</div>
+</div>
+</div>
+<div class="tree-case">
+<h3>QA 1 | GLOBAL Global cross-patent | BM25 global success: lexical terms + summary evidence</h3>
+<p>검색·질의응답 시스템에서 지식 그래프, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 압축, 이미지 코드 비교 기술을 결합하면 어떤 방식으로 응답 생성 효율을 높일 수 있는가?</p>
+<div class='tree-meta'><span class="tag">method=bm25_with_raptor</span><span class="tag">score=5</span><span class="tag">supported=True</span><span class="tag">hit/rank=1/1</span><span class="tag">sources=7</span><span class="tag">path nodes=14</span></div>
+<div class='usefulness best'><strong>Usefulness:</strong> Recommended <span class='small'>best=bm25_with_raptor</span><br>이 QA에서 GPT-5.5 judge가 가장 쓸만한 조건으로 선택했습니다 (score 5/5, supported=true, answer_f1=0.28, answer_recall=0.44, hit=yes).</div>
+<div class='note tree-note small'>With RAPTOR searches the flattened RAPTOR tree, so retrieved sources can be leaf patents or higher summary nodes.</div>
+<svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 226.5 96.3 C 226.5 128.0, 226.5 135.0, 226.5 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 563.5 64.7, 563.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 96.3 C 395.0 128.0, 395.0 135.0, 395.0 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 166.7 C 395.0 198.3, 282.7 205.3, 282.7 237.0" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 166.7 C 563.5 198.3, 507.3 205.3, 507.3 237.0" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 395.0 26.0 C 395.0 57.6, 226.5 64.7, 226.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 96.3 C 563.5 128.0, 563.5 135.0, 563.5 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+</g><g>
+<g transform="translate(226.5,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(563.5,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(395.0,166.7)">
+<title>#202 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#202</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#237 L2 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#237</text>
+</g>
+<g transform="translate(282.7,237.0)">
+<title>#43 L0 2022-0176479</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0176479</text>
+</g>
+<g transform="translate(507.3,237.0)">
+<title>#147 L0 2022-0077390</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0077390</text>
+</g>
+<g transform="translate(395.0,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(226.5,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(563.5,166.7)">
+<title>#210 L1 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#210</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#238</td><td>L3</td><td>이 특허 묶음은 AI·신경망 처리, 메모리 중심 연산, 반도체 패키징, 검색·질의응답, 영상·이미지 처리, SoC/NoC 제어 기술을 포괄한다. 핵심 기술 - 신경망 실행 결과의 오류율을 비교해 전압·클록 등 전력 설정을 조정하는 전력 관리 기술 - 신경망 파라미터 양자화, 바이너리 뉴럴넷 학습, 모델 압축, LSTM·AI 프로세서 데이터 경로 양자화 기술 - VPU, SIMD, DMA 시퀀서, GEMM·컨볼루션 버퍼링, 시스톨릭 어레이, PE 배열 등 신경망 가속기 구조 - PIM/CIM 기반 메모리 내부 또는 인접 연산, 메모리 요청 스케줄링, 온칩 데이터 이동 제어 기술 - 3D/2.5D 패키징, 칩렛, 메모리 다이·로직 다이 결합, 인터포저 및 열 관리 구조 - 검색 질의 관련도 산정, 센서 데이터 분류, 지식 그래프 생성, 웹 <span class="evidence-hit ev1" title="also appears in answer">콘텐츠</span> 기반 답변 생성, 언어모델 문맥 압축 기술 - 웨이퍼 공정 수율·결함 데이터를 이용한 최적 위치 결정 및 척 유형 결정 기술 - 포인트 클라우드 기반 3차원 객체 인지 모델을 영상 컨텍스트와 객체 클래스별 앵커 박스에 맞게 학습하는 기술 - 이미지 분류용 프록시 모델 학습, 동일 인물 이미지 검색, 이미지 코드의 해밍 비교 처리 기술 - ASIC/SoC/NoC에서 암호화폐 채굴, 외부 트래픽 제어, ECC 처리, NoC 라우팅, 자율주행차용 칩렛 워크로드 스케줄링, ML 가속기 구성을 수행하는 기술 목적 - 허용 가능한 오류 범위 내에서 신경망 전력 <span class="evidence-hit ev1" title="also appears in answer">효율을</span> 높이는 것 - 모델 크기, 메모리 사용량, 데이터 이동량, 연산량을 줄이는 것 - 메모리 내부 연산과 병렬 <span class="evidence-hit ev1" title="also appears in answer">처리를</span> 통해 AI·그래픽·데이터베이스·머신러닝 작업을 가속하는 것 - 멀티레인 AI 시스템, DMA, 메모리 접근, 칩렛 간 작업 분산을 <span class="evidence-hit ev1" title="also appears in answer">효율적으로</span> 제어하는 것 - 영상 생성·복원, 객체 인지, 이미지 검색 및 이미지 코드 비교 성능을 높이는 것 - 검색·질의응답·지식 그래프·언어모델 입력 처리에서 관련 정보 추출과 응답 생성을 효율화하는 것 - 반도체 공정, 웨이퍼 위치, 패키지 구조, 메모리 신뢰성 및 열 특성을 개선하는 것 주요 구성 요소 - 오류율 산정 절차, 애플리케이션 오류 허용치, 전압·클록 제어부 - 레인별 오케스트레이터, 상위 오케스트레이터, 활성 컴포넌트 제어 구조 - VPU 데이터 경로, SIMD 레인, min/max 수집기, DMA 시퀀서, 로드·스토어·퍼뮤트 로직 - 메모리 컨트롤러, PIM 명령 큐, 뱅크 상태 테이블, RAS 매니저, 센스 앰프, compute component - PE 배열, 시스톨릭 어레이, GEMM/MAC 가속기, GPU 칩렛, 커널 디스패치 패킷 - 메모리 다이, 로직 다이, 인터포저, 재배선층, 브릿지 칩, 열전도층 및 열절연 구조 - 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, AI 모델, 지식 그래프 노드·엣지, 이진 임베딩 벡터 - BiLSTM, Transformer, 어텐션 풀링, 후보 문맥, 목표 문맥, <span class="evidence-hit ev1" title="also appears in answer">프롬프트</span> 정보 - 웨이퍼 공정 데이터, 결함 데이터, 학습된 AI 모델, 척 유형, 이탈 범위 - 3차원 영상 데이터, 영상 컨텍스트, 객체 그룹, 객체 클래스별 앵커 박스 - 얼굴 검출 모듈, 파레트 데이터 생성 모듈, 이미지 출력 모듈, 해밍 처리 유닛 또는 메모리 컨트롤러 - NoC, 컨트롤 다이, 해시 다이, ECC 처리 회로, 목적지 ID 매퍼, 센서 데이터 입력 칩렛, 캐시 메모리, ML 가속 코어 효과 - 신경망 전력 설정을 오류 허용 범위 안에서 유지·조정해 전력 <span class="evidence-hit ev1" title="also appears in answer">효율을</span> 높일 수 있다. - 양자화·압축·희소성 활용으로 메모리 사용량, 대역폭, 추론 연산량...</td><td>-</td></tr>
+<tr><td>2</td><td>#234</td><td>L2</td><td>이 특허 묶음은 AI를 활용해 검색 질의, 센서 데이터, 자연어 텍스트, 지식 그래프, 웹 콘텐츠, 질의응답 후보, 언어모델 입력 문맥에서 관련 정보를 추출·평가·응답하는 기술에 관한 것이다. 핵심 기술은 검색 질의와 객체 간 매칭 행렬을 3차원 텐서로 구성해 객체 관련도 점수를 산출하고 검색 결과를 순위화하는 기술, 감지 장치 내에서 센서 데이터를 분석해 실행 동작과 대응 AI 모델을 결정하고 데이터를 분류하는 기술, 사전학습 언어모델로 자연어 입력에서 엔티티 노드와 엣지를 생성해 지식 그래프를 구축하는 기술이다. 또한 지식 그래프 노드의 <span class="evidence-hit ev2" title="also appears in answer">임베딩을</span> 이진 임베딩 벡터로 변환해 질의 관련 노드를 <span class="evidence-hit ev2" title="also appears in answer">선택하고</span> 응답을 제공하는 기술, <span class="evidence-hit ev2" title="also appears in answer">웹페이지</span> <span class="evidence-hit ev2" title="also appears in answer">콘텐츠를</span> 딥러닝 모델에 입력해 헤더와 목록 요소를 포함한 리스트형 답변을 생성하는 기술, 질문과 후보 답변의 문장 길이에 따라 BiLSTM 또는 Transformer 특징 추출기를 <span class="evidence-hit ev2" title="also appears in answer">선택하고</span> 어텐션 풀링으로 상관도를 측정하는 답변 선택 기술, 후보 문맥 중 목표 문맥을 선택·압축해 <span class="evidence-hit ev2" title="also appears in answer">언어모델용</span> 프롬프트 정보를 구성하는 기술을 포함한다. 주요 구성 요소는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, 센서 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥러닝 모델, <span class="evidence-hit ev2" title="also appears in answer">웹페이지</span> 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보·목표 문맥 정보 및 프롬프트 정보이다. 효과는 검색 결과의 관련도 기반 순위화, 장치 내 센서 데이터 분석 및 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의 관련 지식 그래프 노드 식별, 웹 콘텐츠 기반 답변 생성, 질문-답변 상관도 평가, 언어모델 입력량 감소를 통한 처리 자원과 시간 절감이다.</td><td>-</td></tr>
+<tr><td>3</td><td>#208</td><td>L1</td><td>이 특허 묶음은 검색, 질의응답, 지식 그래프, 센서 데이터 분석, 언어모델 프롬프트 처리 등에서 AI 기반으로 관련 정보를 추출·평가·응답하는 기술을 다룬다. 핵심 기술은 다음과 같다. - 검색 질의에 대해 질의 매칭 행렬과 객체 매칭 행렬을 생성하고, 이를 3차원 텐서로 구성하여 각 객체의 관련도 점수를 계산한 뒤 검색 결과를 순위화하는 기술 - 감지 장치 내부에서 센서 데이터를 분석하고, 분석 결과에 따라 실행할 동작과 대응 AI 모델을 결정한 후 센서 데이터를 분류하는 기술 - 자연어 입력 텍스트로부터 사전학습 언어모델을 이용해 엔티티 노드를 생성하고, 이후 노드 간 엣지를 생성하여 지식 그래프를 구축하는 기술 - 지식 그래프 노드의 임베딩 근사값을 이진 임베딩 벡터로 <span class="evidence-hit ev3" title="also appears in answer">변환하고</span>, 질의와의 평가 결과에 따라 관련 노드를 선택해 응답을 제공하는 기술 - <span class="evidence-hit ev3" title="also appears in answer">검색엔진이</span> 관련 있다고 판단한 웹페이지 내용을 딥러닝 모델에 입력하여 헤더와 목록 요소를 포함하는 <span class="evidence-hit ev3" title="also appears in answer">리스트형</span> 답변을 생성하는 기술 - 질문과 후보 답변의 문장 표현을 생성할 때 문장 길이에 따라 BiLSTM 또는 Transformer 기반 특징 추출기를 선택하고, 어텐션 풀링으로 상관도를 측정하는 질의응답 답변 선택 기술 - 입력 질의와 후보 문맥 정보를 바탕으로 목표 문맥을 선택하고, 일부 정보를 압축하여 <span class="evidence-hit ev3" title="also appears in answer">언어모델에</span> 제출할 프롬프트 정보를 구성하는 기술 목적은 검색 질의에 대응하는 객체의 관련도 점수 산출 및 순위화, 센서 데이터의 장치 내 분석과 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의에 대응하는 지식 그래프 노드 식별, 웹 콘텐츠 기반 <span class="evidence-hit ev3" title="also appears in answer">리스트형</span> 답변 생성, 질문-답변 간 상관도 측정, <span class="evidence-hit ev3" title="also appears in answer">언어모델에</span> <span class="evidence-hit ev3" title="also appears in answer">제출되는</span> 콘텐츠 단위를 줄여 처리 자원과 시간을 줄이는 데 있다. 구성 요소로는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, 센서 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥 모델, 웹페이지 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보 문맥 정보, 목표 문맥 정보, 프롬프트 정보 등이 포함된다. 효과는 검색 결과를 관련도 점수에 따라 순위화하고, 센서 데이터를 대응 AI 모델로 분류하며, 자연어 텍스트에서 지식 그래프를 생성하고, 질문과 후보 답변의 상관도를 측정하며, <span class="evidence-hit ev3" title="also appears in answer">언어모델에</span> 입력되는 콘텐츠 단위를 줄여 처리 자원과 시간을 절감하는 것이다.</td><td>-</td></tr>
+<tr><td>4</td><td>#237</td><td>L2</td><td>해당 특허 묶음은 이미지 분류, 동일 인물 이미지 검색, 이미지 코드 비교 처리 기술에 관한 것이다. 핵심 기술은 이미지 분류가 <span class="evidence-hit ev4" title="also appears in answer">필요한</span> 이미지 데이터를 라벨링 데이터와 비라벨링 데이터로 분류하고, 라벨링 데이터 일부로 프록시 모델을 학습한 뒤 샘플링 처리된 비라벨링 데이터 일부를 프록시 모델에 입력하여 학습하는 방법 및 장치이다. 또한 얼굴 검출과 파레트 데이터를 이용해 입력 데이터와 동일한 인물이 포함된 이미지 데이터를 출력하는 이미지 처리 시스템, <span class="evidence-hit ev4" title="also appears in answer">이미지의</span> 이진 임베딩 등 이미지 코드를 메모리 시스템 또는 메모리 <span class="evidence-hit ev4" title="also appears in answer">컨트롤러에서</span> 해밍 처리로 비교하는 기술을 포함한다. 주요 구성 요소 및 절차는 이미지 데이터 획득, 라벨링 데이터 및 비라벨링 데이터 분류, 일부 라벨링 데이터를 이용한 프록시 모델 학습, 비라벨링 데이터 샘플링 및 분류, 분류된 비라벨링 데이터 일부의 프록시 모델 입력 학습, 이미지 데이터가 저장되는 제1 저장 모듈, 입력 모듈, 얼굴 검출 모듈, 파레트 데이터 생성 모듈, 이미지 출력 모듈, 해밍 처리 유닛 또는 메모리 컨트롤러이다. 이들 기술은 비전 기반 산업 응용 프로그램에서 프록시 모델을 활용한 라벨링 데이터를 획득하고, 입력 데이터와 동일한 인물이 포함된 이미지 데이터를 출력하며, IoT 등 단말 장치에서 생성된 이미지 코드를 다른 이미지 또는 이미지 <span class="evidence-hit ev4" title="also appears in answer">데이터셋</span>과 비교해 매칭 또는 신경망 결과를 식별하는 데 사용될 수 있다. 제시된 효과로는 이미지 코드 비교를 메모리 장치에 가까운 처리 유닛 또는 메모리 <span class="evidence-hit ev4" title="also appears in answer">컨트롤러에서</span> 수행함으로써 신경망에서 <span class="evidence-hit ev4" title="also appears in answer">데이터셋</span> 처리 속도와 <span class="evidence-hit ev4" title="also appears in answer">처리량을</span> 높일 수 있는 점이 포함된다.</td><td>-</td></tr>
+<tr><td>5</td><td>#202</td><td>L1</td><td>해당 특허 묶음은 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 분류, 동일 인물 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 검색, <span class="evidence-hit ev5" title="also appears in answer">이미지</span> <span class="evidence-hit ev5" title="also appears in answer">코드</span> 비교 처리 기술에 관한 것이다. 핵심 기술은 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 분류가 필요한 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터를 라벨링 데이터와 비라벨링 데이터로 분류하고, 라벨링 데이터 일부로 프록시 모델을 학습한 뒤 샘플링 처리된 비라벨링 데이터 일부를 프록시 모델에 입력하여 학습하는 방법 및 장치, 얼굴 검출 및 파레트 데이터를 이용해 입력 데이터와 동일한 인물이 포함된 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터를 출력하는 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 처리 시스템, 그리고 <span class="evidence-hit ev5" title="also appears in answer">이미지</span>의 이진 <span class="evidence-hit ev5" title="also appears in answer">임베딩</span> 등 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> <span class="evidence-hit ev5" title="also appears in answer">코드를</span> 메모리 시스템 또는 메모리 컨트롤러에서 해밍 <span class="evidence-hit ev5" title="also appears in answer">처리로</span> 비교하는 기술이다. 주요 구성 요소 및 절차는 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터 획득, 라벨링 데이터 및 비라벨링 데이터 분류, 일부 라벨링 데이터를 이용한 프록시 모델 학습, 비라벨링 데이터 샘플링 및 분류, 분류된 비라벨링 데이터 일부의 프록시 모델 입력 학습, <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터가 저장되는 제1 저장 모듈, 입력 모듈, 얼굴 검출 모듈, 파레트 데이터 생성 모듈, <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 출력 모듈, 그리고 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> <span class="evidence-hit ev5" title="also appears in answer">코드</span> 비교를 수행하는 해밍 처리 유닛 또는 메모리 컨트롤러를 포함한다. 이들 기술은 비전 기반 산업 응용 프로그램에서 프록시 모델을 활용한 라벨링 데이터를 획득하고, 입력 데이터와 동일한 인물이 포함된 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터를 출력하며, IoT 등 단말 장치에서 생성된 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> <span class="evidence-hit ev5" title="also appears in answer">코드를</span> 다른 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 또는 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> 데이터셋과 비교해 매칭 또는 신경망 결과를 식별하는 데 사용될 수 있다. 제시된 효과로는 <span class="evidence-hit ev5" title="also appears in answer">이미지</span> <span class="evidence-hit ev5" title="also appears in answer">코드</span> 비교를 메모리 장치에 가까운 처리 유닛 또는 메모리 컨트롤러에서 수행함으로써 신경망에서 데이터셋 처리 속도와 처리량을 높일 수 있는 점이 포함된다.</td><td>-</td></tr>
+<tr><td>6</td><td>#43</td><td>L0</td><td>인공 신경망을 사용하는 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 처리 방법 및 이를 위한 장치(image processing method using neural network and apparatus therefor). 일 실시예에 따른 동일한 인물이 포함된 <span class="evidence-hit ev6" title="also appears in answer">이미지</span>를 검색하기 위한 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 처리 시스템은, <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 데이터가 저장되는 제1 저장 모듈, <span class="evidence-hit ev6" title="also appears in answer">검색</span> 대상이 되는 인물이 포함된 입력 데이터를 입력 받는 입력 모듈, 상기 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 데이터에 포함된 얼굴 영역을 추출하여 얼굴 데이터를 생성하는 얼굴 검출 모듈, 적어도 하나의 상기 얼굴 데이터를 포함하는 파레트 데이터를 생성하는 파레트 데이터 생성 모듈, 및 상기 입력 데이터 및 상기 파레트 데이터를 비교하여 생성된 결과 정보를 기반으로 상기 입력 데이터와 동일한 인물이 포함된 상기 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 데이터를 출력하는 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 출력 모듈을 포함하는 <span class="evidence-hit ev6" title="also appears in answer">이미지</span> 처리 장치;를 포함할 <span class="evidence-hit ev6" title="also appears in answer">수</span> 있다.</td><td>2022-0176479</td></tr>
+<tr><td>7</td><td>#147</td><td>L0</td><td>프로세싱-인-메모리 컴퓨팅 시스템 및 그의 메모리 컨트롤러(pim computing system and memory controller therof). 본 발명은 PIM 컴퓨팅 시스템 및 그의 메모리 컨트롤러를 개시하며, 상기 PIM 컴퓨팅 시스템은 PIM 리퀘스트의 경우 페이지 단위로 PIM 연산을 수행할 <span class="evidence-hit ev7" title="also appears in answer">수</span> 있도록 버스트 렝쓰를 증가시킴으로써 메모리 트래픽을 개선하고 PIM 연산 <span class="evidence-hit ev7" title="also appears in answer">효율을</span> 개선할 <span class="evidence-hit ev7" title="also appears in answer">수</span> 있다.</td><td>2022-0077390</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Answer with node evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev5'>#202</span></span><span class='evidence-chip'><span class='evidence-hit ev1'>#238</span></span><span class='evidence-chip'><span class='evidence-hit ev2'>#234</span></span><span class='evidence-chip'><span class='evidence-hit ev3'>#208</span></span><span class='evidence-chip'><span class='evidence-hit ev4'>#237</span></span></div>
+<p class='answer-text'>제공된 맥락상, 네 기술을 결합하면 응답 생성 전에 관련 후보를 줄이고, 입력 문맥을 압축하며, <span class="evidence-hit ev5" title="#202">이미지</span> 매칭 <span class="evidence-hit ev1" title="#238">처리를</span> 메모리 근접에서 수행하는 방식으로 <span class="evidence-hit ev1" title="#238">효율을</span> 높일 수 있다. 검색 질의가 들어오면 먼저 지식 그래프에서 노드 <span class="evidence-hit ev2" title="#234">임베딩을</span> 이진 <span class="evidence-hit ev5" title="#202">임베딩</span> 벡터로 <span class="evidence-hit ev3" title="#208">변환하고</span> 질의 관련 노드를 선택해 응답 후보 범위를 좁힌다. 이후 <span class="evidence-hit ev3" title="#208">검색엔진이</span> 관련 있다고 판단한 <span class="evidence-hit ev2" title="#234">웹페이지</span> <span class="evidence-hit ev2" title="#234">콘텐츠를</span> 딥러닝 모델에 입력해 헤더와 목록 요소를 포함한 <span class="evidence-hit ev3" title="#208">리스트형</span> 답변을 생성할 수 있다. 그 다음 후보 문맥 중 목표 문맥을 <span class="evidence-hit ev2" title="#234">선택하고</span> 일부 정보를 압축해 <span class="evidence-hit ev2" title="#234">언어모델용</span> <span class="evidence-hit ev1" title="#238">프롬프트</span> 정보를 구성하면, <span class="evidence-hit ev3" title="#208">언어모델에</span> <span class="evidence-hit ev3" title="#208">제출되는</span> <span class="evidence-hit ev1" title="#238">콘텐츠</span> 단위가 줄어 처리 자원과 시간이 절감된다. <span class="evidence-hit ev5" title="#202">이미지</span> 코드 비교가 <span class="evidence-hit ev4" title="#237">필요한</span> 경우에는 <span class="evidence-hit ev4" title="#237">이미지의</span> 이진 <span class="evidence-hit ev5" title="#202">임베딩</span> 등 <span class="evidence-hit ev5" title="#202">이미지</span> <span class="evidence-hit ev5" title="#202">코드를</span> 메모리 시스템 또는 메모리 <span class="evidence-hit ev4" title="#237">컨트롤러에서</span> 해밍 <span class="evidence-hit ev5" title="#202">처리로</span> 비교해 매칭 여부를 빠르게 식별할 수 있다. 이는 <span class="evidence-hit ev5" title="#202">이미지</span> <span class="evidence-hit ev4" title="#237">데이터셋</span> 처리 속도와 <span class="evidence-hit ev4" title="#237">처리량을</span> 높이고, 응답 생성 과정에서 <span class="evidence-hit ev4" title="#237">필요한</span> 시각 정보 후보를 <span class="evidence-hit ev1" title="#238">효율적으로</span> 줄이는 데 기여한다. 따라서 전체적으로는 지식 그래프 기반 후보 축소, 웹 <span class="evidence-hit ev1" title="#238">콘텐츠</span> 기반 답변 생성, 문맥 압축을 통한 <span class="evidence-hit ev1" title="#238">프롬프트</span> 입력량 감소, 해밍 기반 <span class="evidence-hit ev5" title="#202">이미지</span> 코드 비교 가속을 통해 응답 생성의 계산량, 데이터 이동량, 처리 시간과 자원 사용을 줄일 수 있다.</p>
+<p class='small'>위 node table의 형광펜은 retrieved source의 retrieval/evidence cue를 표시합니다. Answer의 형광 밑줄은 그중 실제 답변 문장에 반영된 표현을 같은 node 색으로 연결한 것입니다.</p>
+</div>
+<div class='without-comparison'>
+<div class='without-visual-head'>
+<h4>Same query without RAPTOR</h4>
+<div class='tree-meta'><span class="tag">method=bm25_without_raptor</span><span class="tag">score=1</span><span class="tag">supported=True</span><span class="tag">hit/rank=0/-</span><span class="tag">sources=20</span><span class="tag">view=ranked leaf retrieval</span></div>
+<div class='usefulness weak'><strong>Usefulness:</strong> Less useful <span class='small'>best=bm25_with_raptor</span><br>이 QA에서는 best 조건인 bm25_with_raptor보다 답변 품질 또는 근거성이 약했습니다 (score 1/5, supported=true, answer_f1=0.18, answer_recall=0.15, hit=no).</div>
+<div class='note tree-note small'>동일 질문과 동일 retriever에서 RAPTOR summary node를 제거하고 leaf patent만 검색한 결과입니다. Tree overlay 대신 ranked leaf evidence로 비교합니다.</div>
+<svg class="mini-tree" viewBox="0 0 760 112" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="55.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+</g><g>
+<g transform="translate(207.8,52.0)">
+<title>#42 L0 2022-0163873</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0163873</text>
+</g>
+<g transform="translate(657.1,52.0)">
+<title>#96 L0 2021-0182352</title>
+<circle r="5.2" fill="#dc2626" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">8</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2021-0182352</text>
+</g>
+<g transform="translate(582.2,52.0)">
+<title>#36 L0 2020-0112148</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2020-0112148</text>
+</g>
+<g transform="translate(132.9,52.0)">
+<title>#43 L0 2022-0176479</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0176479</text>
+</g>
+<g transform="translate(282.7,52.0)">
+<title>#147 L0 2022-0077390</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0077390</text>
+</g>
+<g transform="translate(357.6,52.0)">
+<title>#47 L0 2023-0142230</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2023-0142230</text>
+</g>
+<g transform="translate(432.4,52.0)">
+<title>#192 L0 2021-0034787</title>
+<circle r="5.2" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2021-0034787</text>
+</g>
+<g transform="translate(507.3,52.0)">
+<title>#198 L0 2024-7013765</title>
+<circle r="5.2" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2024-7013765</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved leaf</span></div>
+</div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#43</td><td>L0</td><td>인공 신경망을 사용하는 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 처리 방법 및 이를 위한 장치(image processing method using neural network and apparatus therefor). 일 실시예에 따른 동일한 인물이 포함된 <span class="evidence-hit ev1" title="also appears in answer">이미지</span>를 검색하기 위한 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 처리 시스템은, <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 데이터가 저장되는 제1 저장 모듈, <span class="evidence-hit ev1" title="also appears in answer">검색</span> 대상이 되는 인물이 포함된 입력 데이터를 입력 받는 입력 모듈, 상기 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 데이터에 포함된 <span class="evidence-hit ev1" title="also appears in answer">얼굴</span> 영역을 추출하여 <span class="evidence-hit ev1" title="also appears in answer">얼굴</span> 데이터를 생성하는 <span class="evidence-hit ev1" title="also appears in answer">얼굴</span> 검출 모듈, 적어도 하나의 상기 <span class="evidence-hit ev1" title="also appears in answer">얼굴</span> 데이터를 포함하는 파레트 데이터를 생성하는 파레트 데이터 생성 모듈, 및 상기 입력 데이터 및 상기 파레트 데이터를 비교하여 생성된 결과 정보를 기반으로 상기 입력 데이터와 동일한 인물이 포함된 상기 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 데이터를 출력하는 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 출력 모듈을 포함하는 <span class="evidence-hit ev1" title="also appears in answer">이미지</span> 처리 장치;를 포함할 <span class="evidence-hit ev1" title="also appears in answer">수</span> 있다.</td><td>2022-0176479</td></tr>
+<tr><td>2</td><td>#42</td><td>L0</td><td>비전 기반 산업 응용 프로그램에서 <span class="evidence-hit ev2" title="also appears in answer">프록시</span> 모델을 활용한 라벨링 데이터를 획득하는 방법 및 그 장치(method for acquiring labeling data utilizing proxy models in vision-based industrial applications and apparatus thereof). 본 발명은 <span class="evidence-hit ev2" title="also appears in answer">이미지</span> 분류 장치에 의해 수행되는 방법에 있어서, <span class="evidence-hit ev2" title="also appears in answer">이미지</span> 분류가 필요한 <span class="evidence-hit ev2" title="also appears in answer">이미지</span> 데이터를 획득하는 단계, <span class="evidence-hit ev2" title="also appears in answer">이미지</span> 데이터에서 라벨링 데이터 및 비 라벨링 데이터로 분류하는 단계, 라벨링 데이터 중 일부를 활용하여 <span class="evidence-hit ev2" title="also appears in answer">프록시</span> 모델을 학습하는 단계, 비 라벨링 데이터 중 샘플링 처리를 통해 비 라벨링 데이터를 분류하는 단계, 및 분류된 비 라벨링 데이터 중 일부 데이터를 <span class="evidence-hit ev2" title="also appears in answer">프록시</span> 모델에 입력하여 학습하는 단계를 포함하는 비전 기반 산업 응용 프로그램에서 <span class="evidence-hit ev2" title="also appears in answer">프록시</span> 모델을 활용한 라벨링 데이터를 획득하는 방법 및 그 장치에 관한 것이다.</td><td>2022-0163873</td></tr>
+<tr><td>3</td><td>#147</td><td>L0</td><td>프로세싱-인-메모리 컴퓨팅 시스템 및 그의 메모리 컨트롤러(<span class="evidence-hit ev3" title="also appears in answer">pim</span> computing system and memory controller therof). 본 발명은 <span class="evidence-hit ev3" title="also appears in answer">PIM</span> 컴퓨팅 시스템 및 그의 메모리 컨트롤러를 개시하며, 상기 <span class="evidence-hit ev3" title="also appears in answer">PIM</span> 컴퓨팅 시스템은 <span class="evidence-hit ev3" title="also appears in answer">PIM</span> 리퀘스트의 경우 페이지 단위로 <span class="evidence-hit ev3" title="also appears in answer">PIM</span> 연산을 수행할 <span class="evidence-hit ev3" title="also appears in answer">수</span> 있도록 버스트 렝쓰를 증가시킴으로써 메모리 트래픽을 개선하고 <span class="evidence-hit ev3" title="also appears in answer">PIM</span> 연산 <span class="evidence-hit ev3" title="also appears in answer">효율을</span> 개선할 <span class="evidence-hit ev3" title="also appears in answer">수</span> 있다.</td><td>2022-0077390</td></tr>
+<tr><td>4</td><td>#47</td><td>L0</td><td>인공지능 <span class="evidence-hit ev4" title="also appears in answer">모델</span>의 <span class="evidence-hit ev4" title="also appears in answer">국부</span> <span class="evidence-hit ev4" title="also appears in answer">압축</span> 방법 및 시스템(method and system for local compression of artificial intelligence model). 인공지능 <span class="evidence-hit ev4" title="also appears in answer">모델</span>의 <span class="evidence-hit ev4" title="also appears in answer">국부</span> <span class="evidence-hit ev4" title="also appears in answer">압축</span> 방법 및 시스템을 개시한다. 일실시예에 따른 <span class="evidence-hit ev4" title="also appears in answer">모델</span> <span class="evidence-hit ev4" title="also appears in answer">국부</span> <span class="evidence-hit ev4" title="also appears in answer">압축</span> 방법은 사전 학습된 <span class="evidence-hit ev4" title="also appears in answer">모델</span>을 입력받는 단계, 상기 입력받은 <span class="evidence-hit ev4" title="also appears in answer">모델</span>의 일부로서의 레이어 그룹을 선정하는 단계 및 상기 적어도 하나의 프로세서에 의해, 상기 선정된 레이어 그룹을 부분적으로 압축하고, 상기 압축된 레이어 그룹에 대한 재학습을 수행하는 단계를 포함하되, 상기 압축된 레이어 그룹에 대한 재학습은, 상기 선정된 레이어 그룹에 대해 미리 저장된 입력 데이터 및 출력 데이터에 기반하여 상기 압축된 레이어 그룹을 재학습하는 것을 포함할 <span class="evidence-hit ev4" title="also appears in answer">수</span> 있다.</td><td>2023-0142230</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Without RAPTOR answer with leaf evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev1'>#43</span></span><span class='evidence-chip'><span class='evidence-hit ev2'>#42</span></span><span class='evidence-chip'><span class='evidence-hit ev4'>#47</span></span><span class='evidence-chip'><span class='evidence-hit ev3'>#147</span></span></div>
+<p class='answer-text'>제공된 문맥만으로는 답변하기에 불충분합니다. 문맥에는 <span class="evidence-hit ev1" title="#43">얼굴</span> 데이터/파레트 데이터 비교를 통한 <span class="evidence-hit ev1" title="#43">이미지</span> <span class="evidence-hit ev1" title="#43">검색</span>, <span class="evidence-hit ev2" title="#42">프록시</span> <span class="evidence-hit ev4" title="#47">모델</span> 학습, <span class="evidence-hit ev4" title="#47">모델</span> <span class="evidence-hit ev4" title="#47">국부</span> <span class="evidence-hit ev4" title="#47">압축</span>, NPU/<span class="evidence-hit ev3" title="#147">PIM</span>/GPU 최적화 등은 언급되어 있지만, <span class="evidence-hit ev1" title="#43">검색</span>·질의응답 시스템에서 지식 그래프, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 <span class="evidence-hit ev4" title="#47">압축</span>, <span class="evidence-hit ev1" title="#43">이미지</span> 코드 비교 기술을 결합하여 응답 생성 <span class="evidence-hit ev3" title="#147">효율을</span> 높이는 구체적 방식은 설명되어 있지 않습니다.</p>
+<p class='small'>위 leaf table의 모든 행은 retrieved leaf입니다. Table 형광펜은 retrieval/evidence cue이고, Answer 형광 밑줄은 실제 답변 문장에 반영된 표현을 같은 leaf 색으로 연결한 것입니다. with RAPTOR와 달리 상위 summary node 없이 leaf patent만 근거로 사용했습니다.</p>
+</div>
+</div>
+</div>
+<div class='page-break'></div>
+<div class="tree-case">
+<h3>QA 8 | AA AI 코어 및 가속기 | Dense local success: semantic retrieval found the exact patent</h3>
+<p>17-070786 특허에서 센서 데이터 분석 후 생성되는 이벤트의 목적은 무엇인가요?</p>
+<div class='tree-meta'><span class="tag">method=dense_bge_m3_with_raptor</span><span class="tag">score=5</span><span class="tag">supported=True</span><span class="tag">hit/rank=1/1</span><span class="tag">sources=10</span><span class="tag">path nodes=15</span></div>
+<div class='usefulness comparable'><strong>Usefulness:</strong> Comparable <span class='small'>best=dense_bge_m3_without_raptor</span><br>best는 dense_bge_m3_without_raptor이지만, 이 조건도 같은 수준의 score/support/hit을 보였습니다 (score 5/5, supported=true, answer_f1=0.34, answer_recall=0.47, hit=yes).</div>
+<div class='note tree-note small'>With RAPTOR searches the flattened RAPTOR tree, so retrieved sources can be leaf patents or higher summary nodes.</div>
+<svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 170.3 96.3 C 170.3 128.0, 192.8 135.0, 192.8 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 282.7 64.7, 282.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 619.7 64.7, 619.7 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 507.3 64.7, 507.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 462.4 166.7 C 462.4 198.3, 507.3 205.3, 507.3 237.0" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 192.8 166.7 C 192.8 198.3, 282.7 205.3, 282.7 237.0" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 170.3 64.7, 170.3 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 395.0 96.3 C 395.0 128.0, 597.2 135.0, 597.2 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 619.7 96.3 C 619.7 128.0, 462.4 135.0, 462.4 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+<path d="M 507.3 96.3 C 507.3 128.0, 327.6 135.0, 327.6 166.7" fill="none" stroke="#2563eb" stroke-width="1.25" opacity=".72"/>
+</g><g>
+<g transform="translate(192.8,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(282.7,96.3)">
+<title>#235 L2 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">8</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#235</text>
+</g>
+<g transform="translate(619.7,96.3)">
+<title>#233 L2 summary node</title>
+<circle r="8.0" fill="#059669" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#233</text>
+</g>
+<g transform="translate(507.3,26.0)">
+<title>#239 L3 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#239</text>
+</g>
+<g transform="translate(507.3,96.3)">
+<title>#229 L2 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#229</text>
+</g>
+<g transform="translate(507.3,237.0)">
+<title>#41 L0 2022-0154783</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0154783</text>
+</g>
+<g transform="translate(282.7,237.0)">
+<title>#10 L0 17-070786</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">17-070786</text>
+</g>
+<g transform="translate(282.7,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(170.3,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(597.2,166.7)">
+<title>#214 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#214</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#232 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#64748b" stroke-width="1.1"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">9</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#232</text>
+</g>
+<g transform="translate(462.4,166.7)">
+<title>#212 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#212</text>
+</g>
+<g transform="translate(327.6,166.7)">
+<title>#224 L1 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#224</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#208</td><td>L1</td><td>이 특허 묶음은 검색, 질의응답, 지식 그래프, <span class="evidence-hit ev1" title="also appears in answer">센서</span> 데이터 <span class="evidence-hit ev1" title="also appears in answer">분석</span>, 언어모델 프롬프트 처리 등에서 AI 기반으로 관련 정보를 추출·평가·응답하는 기술을 다룬다. 핵심 기술은 다음과 같다. - 검색 질의에 대해 질의 매칭 행렬과 객체 매칭 행렬을 생성하고, 이를 3차원 텐서로 구성하여 각 객체의 관련도 점수를 계산한 뒤 검색 결과를 순위화하는 기술 - 감지 장치 내부에서 <span class="evidence-hit ev1" title="also appears in answer">센서</span> 데이터를 분석하고, <span class="evidence-hit ev1" title="also appears in answer">분석</span> 결과에 따라 실행할 <span class="evidence-hit ev1" title="also appears in answer">동작과</span> 대응 AI 모델을 결정한 후 <span class="evidence-hit ev1" title="also appears in answer">센서</span> 데이터를 분류하는 기술 - 자연어 입력 텍스트로부터 사전학습 언어모델을 이용해 엔티티 노드를 생성하고, 이후 노드 간 엣지를 생성하여 지식 그래프를 구축하는 기술 - 지식 그래프 노드의 임베딩 근사값을 이진 임베딩 벡터로 변환하고, 질의와의 평가 결과에 따라 관련 노드를 선택해 응답을 제공하는 기술 - 검색엔진이 관련 있다고 판단한 웹페이지 내용을 딥러닝 모델에 입력하여 헤더와 목록 요소를 포함하는 리스트형 답변을 생성하는 기술 - 질문과 후보 답변의 문장 표현을 생성할 때 문장 길이에 따라 BiLSTM 또는 Transformer 기반 특징 추출기를 선택하고, 어텐션 풀링으로 상관도를 측정하는 질의응답 답변 선택 기술 - 입력 질의와 후보 문맥 정보를 바탕으로 목표 문맥을 선택하고, 일부 정보를 압축하여 언어모델에 제출할 프롬프트 정보를 구성하는 기술 <span class="evidence-hit ev1" title="also appears in answer">목적은</span> 검색 질의에 대응하는 객체의 관련도 점수 산출 및 순위화, <span class="evidence-hit ev1" title="also appears in answer">센서</span> 데이터의 장치 내 <span class="evidence-hit ev1" title="also appears in answer">분석</span>과 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의에 대응하는 지식 그래프 노드 식별, 웹 콘텐츠 기반 리스트형 답변 생성, 질문-답변 간 상관도 측정, 언어모델에 제출되는 콘텐츠 단위를 줄여 처리 자원과 시간을 줄이는 데 있다. 구성 요소로는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, <span class="evidence-hit ev1" title="also appears in answer">센서</span> 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥 모델, 웹페이지 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보 문맥 정보, 목표 문맥 정보, 프롬프트 정보 등이 포함된다. 효과는 검색 결과를 관련도 점수에 따라 순위화하고, <span class="evidence-hit ev1" title="also appears in answer">센서</span> 데이터를 대응 AI 모델로 분류하며, 자연어 텍스트에서 지식 그래프를 생성하고, 질문과 후보 답변의 상관도를 측정하며, 언어모델에 입력되는 콘텐츠 단위를 줄여 처리 자원과 시간을 절감하는 것이다.</td><td>-</td></tr>
+<tr><td>2</td><td>#10</td><td>L0</td><td>Event driven configurable artificial <span class="evidence-hit ev2" title="also appears in answer">intelligence</span> workflow. In one embodiment, in response to sensor data received from a sensor device of a detection device, an analysis is performed on the sensor data within the detection device. <span class="evidence-hit ev2" title="also appears in answer">Configuration</span> data is determined based on the analysis of the sensor data. The <span class="evidence-hit ev2" title="also appears in answer">configuration</span> data identifies one or more actions to be performed. Each action is associated with a particular artificial <span class="evidence-hit ev2" title="also appears in answer">intelligence</span> (AI) model. For each of the actions, an event is generated to trigger the <span class="evidence-hit ev2" title="also appears in answer">corresponding</span> action to be performed. In response to each of the events, an AI model <span class="evidence-hit ev2" title="also appears in answer">corresponding</span> to the action associated with the event is executed. The AI model is applied to at least a portion of the sensor data to classify the sensor data.</td><td>17-070786</td></tr>
+<tr><td>3</td><td>#234</td><td>L2</td><td>이 특허 묶음은 AI를 활용해 검색 질의, <span class="evidence-hit ev3" title="also appears in answer">센서</span> 데이터, 자연어 텍스트, 지식 그래프, 웹 콘텐츠, 질의응답 후보, 언어모델 입력 문맥에서 관련 정보를 추출·평가·응답하는 기술에 관한 것이다. 핵심 기술은 검색 질의와 객체 간 매칭 행렬을 3차원 텐서로 구성해 객체 관련도 점수를 산출하고 검색 결과를 순위화하는 기술, 감지 장치 내에서 <span class="evidence-hit ev3" title="also appears in answer">센서</span> 데이터를 분석해 실행 동작과 대응 AI 모델을 결정하고 데이터를 분류하는 기술, 사전학습 언어모델로 자연어 입력에서 엔티티 노드와 엣지를 생성해 지식 그래프를 구축하는 기술이다. 또한 지식 그래프 노드의 임베딩을 이진 임베딩 벡터로 변환해 질의 관련 노드를 선택하고 응답을 제공하는 기술, 웹페이지 콘텐츠를 딥러닝 모델에 입력해 헤더와 목록 요소를 포함한 리스트형 답변을 생성하는 기술, 질문과 후보 답변의 문장 길이에 따라 BiLSTM 또는 Transformer 특징 추출기를 선택하고 어텐션 풀링으로 상관도를 측정하는 답변 선택 기술, 후보 문맥 중 목표 문맥을 선택·압축해 언어모델용 프롬프트 정보를 구성하는 기술을 포함한다. 주요 구성 요소는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, <span class="evidence-hit ev3" title="also appears in answer">센서</span> 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥러닝 모델, 웹페이지 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보·목표 문맥 정보 및 프롬프트 정보이다. 효과는 검색 결과의 관련도 기반 순위화, 장치 내 <span class="evidence-hit ev3" title="also appears in answer">센서</span> 데이터 <span class="evidence-hit ev3" title="also appears in answer">분석</span> 및 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의 관련 지식 그래프 노드 식별, 웹 콘텐츠 기반 답변 생성, 질문-답변 상관도 평가, 언어모델 입력량 감소를 통한 처리 자원과 시간 절감이다.</td><td>-</td></tr>
+<tr><td>4</td><td>#224</td><td>L1</td><td>이 특허 묶음은 신경망의 지속 학습, 압축·양자화, 하드웨어 효율화, 메모리 열화 대응 학습을 다룹니다. 핵심 기술은 새로운 작업 데이터가 들어올 때 기존 지식 파라미터를 고정한 상태로 활성 서브네트워크를 학습하고, 이후 지식 서브네트워크가 활성 서브네트워크의 출력을 모사하도록 학습해 지속 학습을 확장 가능하게 하는 방식입니다. 또한 LSTM의 입력 가중치 행렬과 순환 가중치 행렬을 게이트별로 고정 비트폭으로 양자화하여 추론에 사용할 수 있는 양자화 LSTM을 생성합니다. 구성 요소로는 활성 서브네트워크와 지식 서브네트워크, 에피소드 메모리와 의미 메모리, Fisher 정보 행렬 기반 시냅스 중요도 추정, 채널별 스케일링 팩터, 열화된 메모리 셀을 고려한 메모리 어레이 모델, GEMM용 버퍼링·전치 하드웨어 로직, 복수의 컨볼루션 엔진이 포함됩니다. <span class="evidence-hit ev4" title="also appears in answer">목적은</span> 기존 작업 성능을 유지하면서 새 작업을 학습하고, 신경망의 크기와 연산량을 줄이며, 저정밀 추론과 고속 행렬 연산 및 컨볼루션 처리를 가능하게 하는 것입니다. 특히 채널 중요도를 산출해 관련성이 낮은 채널을 제거하고, 컨볼루션에서는 입력 데이터와 가중치를 여러 필터 윈도우 계산에 재사용하도록 메모리 접근 순서를 설계합니다. 효과는 지속 학습 시 망각을 줄이고, LSTM 및 일반 신경망의 추론 효율을 높이며, CPU에서의 느린 데이터 재포맷을 줄이고 DDR 메모리 처리량을 향상시키는 것입니다. 또한 열화된 메모리 셀에는 별도 쓰기 파라미터를 적용해 신경망 학습 중 메모리 열화를 보상할 수 있습니다.</td><td>-</td></tr>
+<tr><td>5</td><td>#212</td><td>L1</td><td>이 특허 묶음은 신경망 및 뉴로모픽 연산을 위한 하드웨어 구조, <span class="evidence-hit ev5" title="also appears in answer">메모리/스케줄링</span> 방식, 병렬 처리, 정밀도 제어, 모델 그래프 처리 및 응용 기술에 관한 것이다. 핵심 기술은 시간분할 다중화 기반 뉴로시냅틱 모듈, 뉴럴 네트워크 프로세싱 유닛, NPU 스케줄러, 프로세싱 엘리먼트 어레이, 다중 GPU 신경망 분기 최적화, 가중치 양자화, 가변 정밀도 곱셈기, 확장 메모리 통신 서브시스템 등을 포함한다. 입력 피처맵, 커널, 웨이트, 인풋 액티베이션, 뉴런 속성, 발화 이벤트, 그래프 정보 등을 <span class="evidence-hit ev5" title="also appears in answer">저장·전달·연산하기</span> 위한 구성이 제시된다. 구체적으로, 뉴로시냅틱 모듈은 복수 뉴런의 속성과 시간 단계별 발화 이벤트를 유지하고, 각 시간 단계에서 발화 이벤트를 시간분할 다중화 방식으로 통합한 뒤 뉴런 속성을 병렬로 업데이트한다. 뉴럴 네트워크 프로세싱 유닛은 인스트럭션 메모리, 데이터 메모리, 데이터 플로우 엔진, 컨트롤 플로우 엔진 및 수행 유닛을 포함하며, 데이터 준비가 완료된 태스크의 순서에 따라 태스크 실행을 제어한다. 또한 입력 피처맵과 커널의 컨벌루션을 수행하여 중간 피처맵을 생성하고, 태그 정보에 기초하여 후처리 유닛을 결정하는 방법이 개시된다. 프로세싱 유닛들이 공유할 오퍼랜드를 입력 피처맵의 픽셀값 또는 커널의 웨이트값 중 하나로 결정하고, 이를 기초로 병렬화된 연산을 수행하는 뉴럴 네트워크 장치도 포함된다. 다중 GPU 시스템과 관련해서는 신경망 및 GPU 정보를 포함하는 기반 정보를 수집하고, 신경망을 주 GPU에서 처리되는 주 신경망과 보조 GPU에서 처리되는 보조 신경망을 포함하는 트리 구조 신경망으로 변환한 뒤, 기반 정보에 기초하여 이를 최적화하는 방법이 제시된다. 정밀도 및 데이터 처리와 관련해서는, 웨이트와 인풋 액티베이션을 이용해 모드 신호와 <span class="evidence-hit ev5" title="also appears in answer">오버플로우/언더플로우</span> 여부에 따라 서로 다른 정밀도로 곱셈을 수행하는 플렉서블 멀티플라이어와 새츄레이팅 애더가 개시된다. 가중치 데이터 처리 방법은 가중치 값의 범위를 복수 구간으로 나누어 가중치 레벨에 대응시키는 레벨링 가중치 데이터를 생성하여, 하드웨어 기반 인공 신경망 연산 장치 구현을 위해 가중치 데이터 값의 수를 줄이는 것을 포함한다. 그 밖에, 비휘발성 메모리에 저장된 제1 모델의 그래프와 휘발성 메모리에 저장된 다른 모델의 그래프 중 대응 그래프를 식별하고 이를 기반으로 제1 모델 제어 인스턴스를 획득하는 전자 장치, 신경망 모델 형태의 운영체제를 구성하여 뉴로모픽 컴퓨팅 시스템에 탑재하는 방법, 훈련된 신경망을 이용한 위변조 탐지, 확장 메모리 연산을 위한 통신 서브시스템, 행/열 메모리와 주소 생성 방식을 이용해 서로 다른 형태의 콘볼루션 연산을 지원하는 병렬 프로세서, 고정소수점 변환을 이용한 내적 계산, 데이터 통신 모드 결정기, SIMD 방식 벡터 프로세서와 행렬 곱셈 유닛을 포함하는 특수 목적 하드웨어 칩, 및 현재 실행 작업과 대기 실행 작업에 대한 로드/스토어 작업을 수행하는 인공지능 코어가 포함된다.</td><td>-</td></tr>
+<tr><td>6</td><td>#41</td><td>L0</td><td>위변조 탐지용 신경망 훈련 방법, 이를 위한 시스템, 및 이에 의해 훈련된 신경망을 이용한 위변조 탐지 장치(methdo for training neural networks for forgery <span class="evidence-hit ev6" title="also appears in answer">detection</span>, system therefor, and forgery <span class="evidence-hit ev6" title="also appears in answer">detection</span> <span class="evidence-hit ev6" title="also appears in answer">apparatus</span> using neural networks trained by the method). 본 발명은 위변조 탐지와 관련된 것으로, 소스 데이터들을 전처리하여 획득되는 제1 메타 데이터 셋 및 제2 메타 데이터 셋을 입력으로 하여 제1 및 제2 훈련을 수행하는 과정에서 계산되는 손실을 반영하여 매개 변수를 <span class="evidence-hit ev6" title="also appears in answer">업데이트하도록</span> 훈련된 신경망을 이용하여 위변조 탐지를 수행하는 것과 관련될 수 있다.</td><td>2022-0154783</td></tr>
+<tr><td>7</td><td>#214</td><td>L1</td><td>본 특허는 전력 시스템의 시간지연 안정성 여유를 빠르게 판정하는 방법에 관한 것이다. <span class="evidence-hit ev7" title="also appears in answer">목적은</span> 다중 시간지연을 포함한 전력 시스템의 안정성 분석에서 계산 복잡도를 줄이고 판정 속도를 높이는 데 있다. 핵심 기술은 시간지연 시스템을 재구성하고 차원을 축소하는 절차이다. 먼저 시간지연 모델을 Jordan 표준화하고, 이후 Taylor 전개를 이용해 시간지연이 있는 상태변수와 시간지연이 없는 단계변수를 분리한다. 이어 Schur 단순화를 통해 균형 모델 축소를 수행한다. 구성 요소는 Jordan 표준화, Taylor 분리, Schur 단순화의 세 단계로 정리된다. 제안 방법은 WSCC 3발전기 9버스 전력 시스템의 다중 지연 사례에 적용되어 여러 안정성 판정 기준으로 검증된다. 효과는 시간지연 안정성 여유 판정 시 시스템 차원을 낮추고 계산을 단순화하여 빠른 안정성 분석을 가능하게 하는 것이다.</td><td>-</td></tr>
+<tr><td>8</td><td>#235</td><td>L2</td><td>이 특허 묶음은 반도체 소자의 미세화, <span class="evidence-hit ev8" title="also appears in answer">절연·분리</span> 구조, 전기적 특성 개선, 고내압 유지, 패키지 방열 및 저항 변화 메모리 구현에 관한 기술이다. 핵심 기술은 트렌치, 홈, 리세스, 절연막, 소자 분리층 및 확산 차단 구조를 이용해 활성 영역, 핀, 필러, 서브 활성 패턴 등을 정밀하게 분리하는 것이다. 핀 게이트 구조, LDD와 드레인의 수직 연결 구조, GaN계 소자의 리세스 게이트 구조, 병렬 p-n층 및 슈퍼정션 구조를 통해 동작 전류를 개선하고 온저항을 낮추며 고내압과 항복 내성을 확보한다. GaN 기반 고전력 소자에서는 <span class="evidence-hit ev8" title="also appears in answer">소스·드레인</span> 스트립을 교번 배치하고, 이에 대응하는 빗살형 패드 및 핑거 구조로 전기적 접촉을 형성한다. lateral HEMT 구조에서는 공통 게이트로 <span class="evidence-hit ev8" title="also appears in answer">소스·드레인</span> 핑거 사이 전류를 제어하고, 확장된 소스 핑거 접촉부로 소스 전압을 안정화하여 서브스레숄드 동작과 스위칭 진동을 줄인다. 패키지 및 접속 기술로는 도전층, 접촉 요소, 전기 커넥터, 유전체층 내 리세스 도전 부재를 이용해 반도체 칩과 외부 커넥터를 연결한다. 또한 리드 또는 패키지 내부에 히트파이프를 포함해 열을 균일하게 방출하고 열 손상 위험과 패키지 비용을 줄인다. 그 밖에 응력 향상 표면 확산으로 반도체 표면을 원자 수준으로 평탄화하고, 레이저 박리막 및 고열전도 확산층을 이용해 회로층을 다른 기판 측에 유지한 채 박리하는 기술이 포함된다. 더미 퓨즈와 최소 선폭·간격 조건을 활용해 OPC 조건을 최적화함으로써 퓨즈 선폭을 줄이며, 수소 함유 금속층과 반도성 금속 산화물층 사이의 수소 원자 가역 주입에 따른 저항 변화를 이용해 메모리 비트를 저장한다. 주요 효과는 미세 패턴 형성, 산화막 손실 저감, 동작 전류 개선, 온저항 감소, 고내압 유지, <span class="evidence-hit ev8" title="also appears in answer">게이트-드레인</span> 용량 감소, 회로 지연 및 스위칭 불안정 억제, 표면 평탄도 향상, 방열 성능 개선, 퓨즈 선폭 축소, 저항 변화 메모리 동작 구현이다.</td><td>-</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Answer with node evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev1'>#208</span></span></div>
+<p class='answer-text'><span class="evidence-hit ev1" title="#208">센서</span> 데이터 <span class="evidence-hit ev1" title="#208">분석</span> 후 생성되는 이벤트의 <span class="evidence-hit ev1" title="#208">목적은</span>, 구성 데이터가 식별한 각 동작이 수행되도록 트리거하는 것입니다. 각 이벤트에 대응하여 해당 <span class="evidence-hit ev1" title="#208">동작과</span> 연관된 AI 모델이 실행되고, 이 모델이 <span class="evidence-hit ev1" title="#208">센서</span> 데이터의 적어도 일부에 적용되어 <span class="evidence-hit ev1" title="#208">센서</span> 데이터를 분류합니다.</p>
+<p class='small'>위 node table의 형광펜은 retrieved source의 retrieval/evidence cue를 표시합니다. Answer의 형광 밑줄은 그중 실제 답변 문장에 반영된 표현을 같은 node 색으로 연결한 것입니다.</p>
+</div>
+<div class='without-comparison'>
+<div class='without-visual-head'>
+<h4>Same query without RAPTOR</h4>
+<div class='tree-meta'><span class="tag">method=dense_bge_m3_without_raptor</span><span class="tag">score=5</span><span class="tag">supported=True</span><span class="tag">hit/rank=1/1</span><span class="tag">sources=19</span><span class="tag">view=ranked leaf retrieval</span></div>
+<div class='usefulness best'><strong>Usefulness:</strong> Recommended <span class='small'>best=dense_bge_m3_without_raptor</span><br>이 QA에서 GPT-5.5 judge가 가장 쓸만한 조건으로 선택했습니다 (score 5/5, supported=true, answer_f1=0.33, answer_recall=0.42, hit=yes).</div>
+<div class='note tree-note small'>동일 질문과 동일 retriever에서 RAPTOR summary node를 제거하고 leaf patent만 검색한 결과입니다. Tree overlay 대신 ranked leaf evidence로 비교합니다.</div>
+<svg class="mini-tree" viewBox="0 0 760 112" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="55.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+</g><g>
+<g transform="translate(582.2,52.0)">
+<title>#112 L0 16-138346</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">7</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">16-138346</text>
+</g>
+<g transform="translate(432.4,52.0)">
+<title>#30 L0 2018-0059775</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2018-0059775</text>
+</g>
+<g transform="translate(357.6,52.0)">
+<title>#42 L0 2022-0163873</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0163873</text>
+</g>
+<g transform="translate(207.8,52.0)">
+<title>#41 L0 2022-0154783</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0154783</text>
+</g>
+<g transform="translate(132.9,52.0)">
+<title>#10 L0 17-070786</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">17-070786</text>
+</g>
+<g transform="translate(507.3,52.0)">
+<title>#4 L0 16-370570</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">16-370570</text>
+</g>
+<g transform="translate(657.1,52.0)">
+<title>#103 L0 15-065746</title>
+<circle r="5.2" fill="#059669" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">8</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">15-065746</text>
+</g>
+<g transform="translate(282.7,52.0)">
+<title>#37 L0 2022-0030597</title>
+<circle r="5.2" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="0" y="13.2" text-anchor="middle" font-size="6.6" font-weight="700" fill="#111827">2022-0030597</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved leaf</span></div>
+</div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#10</td><td>L0</td><td>Event driven configurable artificial intelligence workflow. In one embodiment, in response to <span class="evidence-hit ev1" title="also appears in answer">sensor</span> data received from a <span class="evidence-hit ev1" title="also appears in answer">sensor</span> device of a detection device, an analysis is performed on the <span class="evidence-hit ev1" title="also appears in answer">sensor</span> data within the detection device. Configuration data is determined based on the analysis of the <span class="evidence-hit ev1" title="also appears in answer">sensor</span> data. The configuration data identifies one or more actions to be performed. Each action is associated with a particular artificial intelligence (AI) model. For each of the actions, an event is generated to trigger the corresponding action to be performed. In response to each of the events, an AI model corresponding to the action associated with the event is executed. The AI model is applied to at least a portion of the <span class="evidence-hit ev1" title="also appears in answer">sensor</span> data to classify the <span class="evidence-hit ev1" title="also appears in answer">sensor</span> data.</td><td>17-070786</td></tr>
+<tr><td>2</td><td>#41</td><td>L0</td><td>위변조 탐지용 신경망 훈련 방법, 이를 위한 시스템, 및 이에 의해 훈련된 신경망을 이용한 위변조 탐지 장치(methdo for training neural networks for forgery <span class="evidence-hit ev2" title="also appears in answer">detection</span>, system therefor, and forgery <span class="evidence-hit ev2" title="also appears in answer">detection</span> <span class="evidence-hit ev2" title="also appears in answer">apparatus</span> using neural networks trained by the method). 본 발명은 위변조 탐지와 관련된 것으로, 소스 데이터들을 전처리하여 획득되는 제1 메타 데이터 셋 및 제2 메타 데이터 셋을 입력으로 하여 제1 및 제2 훈련을 수행하는 과정에서 계산되는 손실을 반영하여 매개 변수를 <span class="evidence-hit ev2" title="also appears in answer">업데이트하도록</span> 훈련된 신경망을 이용하여 위변조 탐지를 수행하는 것과 관련될 수 있다.</td><td>2022-0154783</td></tr>
+<tr><td>3</td><td>#37</td><td>L0</td><td>프로세싱 엘리먼트, 이를 포함하는 뉴럴 프로세싱 장치 및 그의 연산 방법(<span class="evidence-hit ev3" title="also appears in answer">processing</span> element, neural <span class="evidence-hit ev3" title="also appears in answer">processing</span> device <span class="evidence-hit ev3" title="also appears in answer">including</span> same and method for <span class="evidence-hit ev3" title="also appears in answer">calculating</span> thereof). 본 발명은 프로세싱 엘리먼트, 이를 포함하는 뉴럴 프로세싱 장치 및 그의 연산 방법을 개시한다. 상기 프로세싱 엘리먼트는, 웨이트를 수신하여 저장하는 웨이트 레지스터, 인풋 액티베이션을 저장하는 인풋 액티베이션 레지스터, 상기 웨이트 및 상기 인풋 액티베이션을 수신하고, 모드 신호, 오버플로우 여부 및 언더플로우 여부에 따라 제1 프리시젼 또는 상기 제1 프리시젼과 다른 제2 프리시젼으로 곱셈 연산을 수행하여 결과 데이터를 생성하는 플렉서블 멀티플라이어 및 상기 결과 데이터를 수신하여 부분합을 생성하는 새츄레이팅 애더를 포함한다.</td><td>2022-0030597</td></tr>
+<tr><td>4</td><td>#42</td><td>L0</td><td>비전 기반 산업 응용 프로그램에서 프록시 모델을 활용한 라벨링 데이터를 획득하는 방법 및 그 장치(method for acquiring labeling data utilizing proxy models in vision-based industrial applications and apparatus thereof). 본 발명은 이미지 분류 장치에 의해 수행되는 방법에 있어서, 이미지 분류가 필요한 이미지 데이터를 획득하는 단계, 이미지 데이터에서 라벨링 데이터 및 비 라벨링 데이터로 분류하는 단계, 라벨링 데이터 중 <span class="evidence-hit ev4" title="also appears in answer">일부를</span> 활용하여 프록시 모델을 학습하는 단계, 비 라벨링 데이터 중 샘플링 처리를 통해 비 라벨링 데이터를 분류하는 단계, 및 분류된 비 라벨링 데이터 중 일부 데이터를 프록시 모델에 입력하여 학습하는 단계를 포함하는 비전 기반 산업 응용 프로그램에서 프록시 모델을 활용한 라벨링 데이터를 획득하는 방법 및 그 장치에 관한 것이다.</td><td>2022-0163873</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Without RAPTOR answer with leaf evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev1'>#10</span></span><span class='evidence-chip'><span class='evidence-hit ev4'>#42</span></span></div>
+<p class='answer-text'><span class="evidence-hit ev1" title="#10">센서</span> 데이터 분석 후 생성되는 이벤트의 목적은, 구성 데이터가 식별한 각 액션이 수행되도록 트리거하는 것입니다. 각 이벤트에 대응하여 해당 액션과 연관된 AI 모델이 실행되고, <span class="evidence-hit ev1" title="#10">센서</span> 데이터의 적어도 <span class="evidence-hit ev4" title="#42">일부를</span> 분류합니다.</p>
+<p class='small'>위 leaf table의 모든 행은 retrieved leaf입니다. Table 형광펜은 retrieval/evidence cue이고, Answer 형광 밑줄은 실제 답변 문장에 반영된 표현을 같은 leaf 색으로 연결한 것입니다. with RAPTOR와 달리 상위 summary node 없이 leaf patent만 근거로 사용했습니다.</p>
+</div>
+</div>
+</div>
+<div class='page-break'></div>
+<div class="tree-case">
+<h3>QA 8 | AA AI 코어 및 가속기 | BM25 limitation: source hit but answer unsupported</h3>
+<p>17-070786 특허에서 센서 데이터 분석 후 생성되는 이벤트의 목적은 무엇인가요?</p>
+<div class='tree-meta'><span class="tag">method=bm25_with_raptor</span><span class="tag">score=2</span><span class="tag">supported=False</span><span class="tag">hit/rank=1/1</span><span class="tag">sources=6</span><span class="tag">path nodes=8</span></div>
+<div class='usefulness weak'><strong>Usefulness:</strong> Less useful <span class='small'>best=dense_bge_m3_without_raptor</span><br>이 QA에서는 best 조건인 dense_bge_m3_without_raptor보다 답변 품질 또는 근거성이 약했습니다 (score 2/5, supported=false, answer_f1=0.18, answer_recall=0.21, hit=yes).</div>
+<div class='note tree-note small'>With RAPTOR searches the flattened RAPTOR tree, so retrieved sources can be leaf patents or higher summary nodes.</div>
+<svg class="mini-tree" viewBox="0 0 760 285" role="img" aria-label="QA source path mini-tree">
+<g>
+<text x="10" y="29.0" font-size="9" font-weight="700" fill="#475569">L3</text>
+<text x="10" y="99.3" font-size="9" font-weight="700" fill="#475569">L2</text>
+<text x="10" y="169.7" font-size="9" font-weight="700" fill="#475569">L1</text>
+<text x="10" y="240.0" font-size="9" font-weight="700" fill="#475569">L0 leaves</text>
+</g><g>
+<path d="M 226.5 96.3 C 226.5 128.0, 282.7 135.0, 282.7 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 563.5 64.7, 563.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 563.5 96.3 C 563.5 128.0, 507.3 135.0, 507.3 166.7" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 507.3 26.0 C 507.3 57.6, 395.0 64.7, 395.0 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+<path d="M 282.7 26.0 C 282.7 57.6, 226.5 64.7, 226.5 96.3" fill="none" stroke="#94a3b8" stroke-width="1.25" opacity=".62" stroke-dasharray="4 3"/>
+</g><g>
+<g transform="translate(282.7,166.7)">
+<title>#208 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">1</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#208</text>
+</g>
+<g transform="translate(282.7,26.0)">
+<title>#238 L3 summary node</title>
+<circle r="8.0" fill="#2563eb" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">6</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#238</text>
+</g>
+<g transform="translate(563.5,96.3)">
+<title>#236 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">4</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#236</text>
+</g>
+<g transform="translate(507.3,166.7)">
+<title>#223 L1 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">5</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#223</text>
+</g>
+<g transform="translate(395.0,96.3)">
+<title>#232 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">3</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#232</text>
+</g>
+<g transform="translate(226.5,96.3)">
+<title>#234 L2 summary node</title>
+<circle r="8.0" fill="#d97706" stroke="#f59e0b" stroke-width="2.8"/>
+<text x="0" y="3" text-anchor="middle" font-size="7.2" font-weight="800" fill="#111827">2</text>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#234</text>
+</g>
+<g transform="translate(507.3,26.0)">
+<title>#239 L3 summary node</title>
+<circle r="8.0" fill="#dc2626" stroke="#64748b" stroke-width="1.1"/>
+<text x="14.0" y="3" font-size="7.4" font-weight="800" fill="#111827">#239</text>
+</g>
+</g></svg>
+<div class='tree-legend'><span><span class='legend-dot' style='background:#2563eb'></span>AA</span><span><span class='legend-dot' style='background:#dc2626'></span>AB</span><span><span class='legend-dot' style='background:#059669'></span>AC</span><span><span class='legend-dot' style='background:#d97706'></span>AD</span><span><span class='legend-dot' style='border:2px solid #f59e0b;background:#fff'></span>retrieved</span></div>
+<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>
+<tr><td>1</td><td>#208</td><td>L1</td><td>이 특허 묶음은 검색, 질의응답, 지식 그래프, 센서 데이터 분석, 언어모델 프롬프트 처리 등에서 AI 기반으로 관련 정보를 추출·평가·응답하는 기술을 다룬다. 핵심 기술은 다음과 같다. - 검색 질의에 대해 질의 매칭 행렬과 객체 매칭 행렬을 생성하고, 이를 3차원 텐서로 구성하여 각 객체의 관련도 점수를 계산한 뒤 검색 결과를 순위화하는 기술 - 감지 장치 내부에서 센서 데이터를 분석하고, 분석 결과에 따라 <span class="evidence-hit ev1" title="also appears in answer">실행할</span> <span class="evidence-hit ev1" title="also appears in answer">동작과</span> 대응 AI <span class="evidence-hit ev1" title="also appears in answer">모델을</span> 결정한 후 센서 데이터를 분류하는 기술 - 자연어 입력 텍스트로부터 사전학습 언어모델을 <span class="evidence-hit ev1" title="also appears in answer">이용해</span> 엔티티 노드를 생성하고, 이후 노드 간 엣지를 생성하여 지식 그래프를 구축하는 기술 - 지식 그래프 노드의 임베딩 근사값을 이진 임베딩 벡터로 변환하고, 질의와의 평가 결과에 따라 관련 노드를 선택해 응답을 제공하는 기술 - 검색엔진이 관련 있다고 판단한 웹페이지 내용을 딥러닝 모델에 입력하여 헤더와 목록 요소를 포함하는 리스트형 답변을 생성하는 기술 - 질문과 후보 답변의 문장 표현을 생성할 때 문장 길이에 따라 BiLSTM 또는 Transformer 기반 특징 추출기를 선택하고, 어텐션 풀링으로 상관도를 측정하는 질의응답 답변 선택 기술 - 입력 질의와 후보 문맥 정보를 바탕으로 목표 문맥을 선택하고, 일부 정보를 압축하여 언어모델에 제출할 프롬프트 정보를 구성하는 기술 <span class="evidence-hit ev1" title="also appears in answer">목적은</span> 검색 질의에 대응하는 객체의 관련도 점수 산출 및 순위화, 센서 데이터의 장치 내 분석과 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의에 대응하는 지식 그래프 노드 식별, 웹 콘텐츠 기반 리스트형 답변 생성, 질문-답변 간 상관도 측정, 언어모델에 제출되는 콘텐츠 단위를 줄여 처리 자원과 시간을 줄이는 데 있다. 구성 요소로는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, 센서 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥 모델, 웹페이지 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보 문맥 정보, 목표 문맥 정보, 프롬프트 정보 등이 포함된다. 효과는 검색 결과를 관련도 점수에 따라 순위화하고, 센서 데이터를 대응 AI 모델로 분류하며, 자연어 텍스트에서 지식 그래프를 생성하고, 질문과 후보 답변의 상관도를 측정하며, 언어모델에 입력되는 콘텐츠 단위를 줄여 처리 자원과 시간을 절감하는 것이다.</td><td>-</td></tr>
+<tr><td>2</td><td>#234</td><td>L2</td><td>이 특허 묶음은 AI를 활용해 검색 질의, <span class="evidence-hit ev2" title="also appears in answer">센서</span> 데이터, 자연어 텍스트, 지식 그래프, 웹 콘텐츠, 질의응답 후보, 언어모델 입력 문맥에서 관련 정보를 추출·평가·응답하는 기술에 관한 것이다. 핵심 기술은 검색 질의와 객체 간 매칭 행렬을 3차원 텐서로 구성해 객체 관련도 점수를 산출하고 검색 결과를 순위화하는 기술, 감지 장치 내에서 <span class="evidence-hit ev2" title="also appears in answer">센서</span> 데이터를 분석해 실행 동작과 <span class="evidence-hit ev2" title="also appears in answer">대응</span> AI 모델을 <span class="evidence-hit ev2" title="also appears in answer">결정하고</span> 데이터를 분류하는 기술, 사전학습 언어모델로 자연어 입력에서 엔티티 노드와 엣지를 생성해 지식 그래프를 구축하는 기술이다. 또한 지식 그래프 노드의 임베딩을 이진 임베딩 벡터로 변환해 질의 관련 노드를 선택하고 응답을 제공하는 기술, 웹페이지 콘텐츠를 딥러닝 모델에 입력해 헤더와 목록 요소를 포함한 리스트형 답변을 생성하는 기술, 질문과 후보 답변의 문장 길이에 <span class="evidence-hit ev2" title="also appears in answer">따라</span> BiLSTM 또는 Transformer 특징 추출기를 선택하고 어텐션 풀링으로 상관도를 측정하는 답변 선택 기술, 후보 문맥 중 목표 문맥을 선택·압축해 언어모델용 프롬프트 정보를 구성하는 기술을 포함한다. 주요 구성 요소는 클라이언트 시스템, 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, <span class="evidence-hit ev2" title="also appears in answer">센서</span> 장치, 구성 데이터, 이벤트, AI 모델, 사전학습 언어모델, 지식 그래프의 노드와 엣지, 이진 임베딩 벡터, 딥러닝 모델, 웹페이지 콘텐츠, 계층적 길이 적응형 신경망, BiLSTM, Transformer, 어텐션 풀링, 입력 질의, 후보·목표 문맥 정보 및 프롬프트 정보이다. 효과는 검색 결과의 관련도 기반 순위화, 장치 내 <span class="evidence-hit ev2" title="also appears in answer">센서</span> 데이터 <span class="evidence-hit ev2" title="also appears in answer">분석</span> 및 AI 모델 기반 분류, 자연어 기반 지식 그래프 생성, 질의 관련 지식 그래프 노드 식별, 웹 콘텐츠 기반 답변 생성, 질문-답변 상관도 평가, 언어모델 입력량 감소를 통한 처리 자원과 시간 절감이다.</td><td>-</td></tr>
+<tr><td>3</td><td>#232</td><td>L2</td><td>본 특허는 다중 시간지연을 포함하는 전력 시스템의 시간지연 안정성 여유를 빠르게 판정하기 위한 방법이다. <span class="evidence-hit ev3" title="also appears in answer">목적은</span> 안정성 <span class="evidence-hit ev3" title="also appears in answer">분석</span> 과정의 계산 복잡도를 낮추고 판정 속도를 높이는 것이다. 핵심 기술은 시간지연 시스템을 재구성하고 차원을 축소하는 절차로, 시간지연 모델을 Jordan 표준화한 뒤 Taylor 전개를 통해 시간지연 상태변수와 시간지연이 없는 단계변수를 분리하고, Schur 단순화를 이용해 균형 모델 축소를 수행한다. 주요 구성은 Jordan 표준화, Taylor 분리, Schur 단순화의 3단계이다. 제안 방법은 WSCC 3발전기 9버스 전력 시스템의 다중 지연 사례에 적용되어 여러 안정성 판정 기준으로 검증된다. 효과는 시스템 차원과 계산량을 줄여 시간지연 안정성 여유를 신속하게 <span class="evidence-hit ev3" title="also appears in answer">분석</span>·판정할 수 있게 하는 데 있다.</td><td>-</td></tr>
+<tr><td>4</td><td>#236</td><td>L2</td><td>이 특허 묶음은 ASIC, SoC, NoC 기반 집적회로에서 분산원장 상호작용, 외부 트래픽 제어, 메모리 대상 트랜잭션의 ECC 처리, NoC 라우팅, 자율주행차용 칩렛 SoC의 워크로드 스케줄링, ML 가속기 SoC 구성을 다룬다. 핵심 기술은 다수의 해시 다이와 이를 제어하는 컨트롤 다이를 하나의 집적회로 패키지에 통합한 암호화폐 채굴용 ASIC, 신뢰되지 않은 외부 장치로부터 수신되는 외부 트래픽 양을 감시하고 트래픽 정책 위반을 검출하면 해당 외부 장치의 메시지로 인해 NoC에 발생하는 트래픽을 줄이는 호스트 SoC, 메모리 대상 읽기·쓰기 트랜잭션을 수신해 ECC 데이터를 계산하고 메모리 컨트롤러로 나가는 트랜잭션을 제공하는 NoC 기반 IC이다. 또한 SoC의 NoC 라우팅에서는 매퍼가 트랜잭션의 목적지 ID를 식별하며, 하드웨어 요소가 목적지 ID를 제공하면 주소 맵을 우회하고, 목적지 ID가 제공되지 않으면 트랜잭션의 주소를 이용해 목적지 ID를 식별한다. 자율주행차용 칩렛 기반 SoC는 중앙 칩렛과 <span class="evidence-hit ev4" title="also appears in answer">센서</span> 데이터 입력 칩렛을 포함하고, <span class="evidence-hit ev4" title="also appears in answer">센서</span> 데이터 입력 칩렛이 차량 <span class="evidence-hit ev4" title="also appears in answer">센서</span>로부터 수신한 <span class="evidence-hit ev4" title="also appears in answer">센서</span> 데이터를 캐시 메모리에 저장하면 스케줄링 프로그램이 캐시에 저장된 <span class="evidence-hit ev4" title="also appears in answer">센서</span> 데이터에 적어도 부분적으로 기초해 병렬 워크로드 파이프라인의 워크로드 실행을 스케줄링한다. ML 가속기 SoC는 ML 가속 코어들의 세트, NoC, 추론용 비디오 후처리 모듈, 비디오 디코더를 포함한다.</td><td>-</td></tr>
+<tr><td>5</td><td>#223</td><td>L1</td><td>이 특허 묶음은 ASIC, SoC, NoC 기반 집적회로에서 분산원장 상호작용, 외부 트래픽 제어, 메모리 대상 트랜잭션의 ECC 처리, NoC 라우팅, 자율주행차용 칩렛 SoC의 워크로드 스케줄링, ML 가속기 SoC 구성을 다룬다. 핵심 기술은 다음과 같다. - 암호화폐 채굴용 ASIC은 다수의 해시 다이와 이를 제어하는 컨트롤 다이로 구성되며, 컨트롤 다이는 해시 다이보다 큰 공정 노드로 형성된다. 다이들은 인터커넥터로 전기적으로 연결되고 하나의 집적회로 패키지에 봉입된다. - 호스트 SoC는 내부 블록 간 로컬 트래픽을 전송하는 NoC, 신뢰되지 않은 외부 장치로부터 메시지를 수신하는 외부 프로세서 링크, 및 트래픽 컨트롤러를 포함한다. 트래픽 컨트롤러는 외부 트래픽 양을 감시하고, 트래픽 정책 위반을 검출하면 해당 외부 장치의 메시지로 인해 NoC에 발생하는 트래픽을 줄인다. - NoC 기반 IC는 마스터 장치, 메모리 컨트롤러, 인라인 ECC 회로를 포함하며, ECC 회로는 메모리를 대상으로 하는 읽기 및 쓰기 트랜잭션을 수신하고, 해당 트랜잭션에 기초해 ECC 데이터를 계산하며, 메모리 컨트롤러로 나가는 트랜잭션을 제공한다. - SoC의 NoC 라우팅에서는 매퍼가 트랜잭션의 목적지 ID를 식별한다. 하드웨어 요소가 목적지 ID를 제공하면 주소 맵을 우회하고, 목적지 ID가 제공되지 않으면 트랜잭션의 주소를 이용해 목적지 ID를 식별한다. - 자율주행차용 칩렛 기반 SoC는 중앙 칩렛과 <span class="evidence-hit ev5" title="also appears in answer">센서</span> 데이터 입력 칩렛을 포함한다. 중앙 칩렛은 병렬 워크로드 파이프라인과 관련된 프로그램을 저장하는 공유 메모리, 스케줄링 프로그램을 실행하는 프로세서, 및 SoC의 칩렛들이 접근 가능한 캐시 메모리를 포함한다. <span class="evidence-hit ev5" title="also appears in answer">센서</span> 데이터 입력 칩렛은 차량 <span class="evidence-hit ev5" title="also appears in answer">센서</span>로부터 <span class="evidence-hit ev5" title="also appears in answer">센서</span> 데이터를 수신해 캐시 메모리에 저장하고, 스케줄링 프로그램은 캐시에 저장된 <span class="evidence-hit ev5" title="also appears in answer">센서</span> 데이터에 적어도 부분적으로 기초해 병렬 워크로드 파이프라인의 워크로드 실행을 스케줄링한다. - ML 가속기 SoC는 ML 가속 코어들의 세트, 이들과 결합된 NoC, NoC에 결합된 추론용 비디오 후처리 모듈, 및 NoC에 결합된 비디오 디코더를 포함한다.</td><td>-</td></tr>
+<tr><td>6</td><td>#238</td><td>L3</td><td>이 특허 묶음은 AI·신경망 처리, 메모리 중심 연산, 반도체 패키징, 검색·질의응답, 영상·이미지 처리, SoC/NoC 제어 기술을 포괄한다. 핵심 기술 - 신경망 실행 결과의 오류율을 비교해 전압·클록 등 전력 설정을 조정하는 전력 관리 기술 - 신경망 파라미터 양자화, 바이너리 뉴럴넷 학습, 모델 압축, LSTM·AI 프로세서 데이터 경로 양자화 기술 - VPU, SIMD, DMA 시퀀서, GEMM·컨볼루션 버퍼링, 시스톨릭 어레이, PE 배열 등 신경망 가속기 구조 - PIM/CIM 기반 메모리 내부 또는 인접 연산, 메모리 요청 스케줄링, 온칩 데이터 이동 제어 기술 - 3D/2.5D 패키징, 칩렛, 메모리 다이·로직 다이 결합, 인터포저 및 열 관리 구조 - 검색 질의 관련도 산정, <span class="evidence-hit ev6" title="also appears in answer">센서</span> 데이터 분류, 지식 그래프 생성, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 압축 기술 - 웨이퍼 공정 수율·결함 데이터를 이용한 최적 위치 결정 및 척 유형 결정 기술 - 포인트 클라우드 기반 3차원 객체 인지 모델을 영상 컨텍스트와 객체 클래스별 앵커 박스에 맞게 학습하는 기술 - 이미지 분류용 프록시 모델 학습, 동일 인물 이미지 검색, 이미지 코드의 해밍 비교 처리 기술 - ASIC/SoC/NoC에서 암호화폐 채굴, 외부 트래픽 제어, ECC 처리, NoC 라우팅, 자율주행차용 칩렛 워크로드 스케줄링, ML 가속기 구성을 수행하는 기술 목적 - 허용 가능한 오류 범위 내에서 신경망 전력 효율을 높이는 것 - 모델 크기, 메모리 사용량, 데이터 이동량, 연산량을 줄이는 것 - 메모리 내부 연산과 병렬 처리를 통해 AI·그래픽·데이터베이스·머신러닝 작업을 가속하는 것 - 멀티레인 AI 시스템, DMA, 메모리 접근, 칩렛 간 작업 분산을 효율적으로 제어하는 것 - 영상 생성·복원, 객체 인지, 이미지 검색 및 이미지 코드 비교 성능을 높이는 것 - 검색·질의응답·지식 그래프·언어모델 입력 처리에서 관련 정보 추출과 응답 생성을 효율화하는 것 - 반도체 공정, 웨이퍼 위치, 패키지 구조, 메모리 신뢰성 및 열 특성을 개선하는 것 주요 구성 요소 - 오류율 산정 절차, 애플리케이션 오류 허용치, 전압·클록 제어부 - 레인별 오케스트레이터, 상위 오케스트레이터, 활성 컴포넌트 제어 구조 - VPU 데이터 경로, SIMD 레인, min/max 수집기, DMA 시퀀서, 로드·스토어·퍼뮤트 로직 - 메모리 컨트롤러, PIM 명령 큐, 뱅크 상태 테이블, RAS 매니저, 센스 앰프, compute component - PE 배열, 시스톨릭 어레이, GEMM/MAC 가속기, GPU 칩렛, 커널 디스패치 패킷 - 메모리 다이, 로직 다이, 인터포저, 재배선층, 브릿지 칩, 열전도층 및 열절연 구조 - 검색 질의, 매칭 행렬, 3차원 텐서, 관련도 점수, AI 모델, 지식 그래프 노드·엣지, 이진 임베딩 벡터 - BiLSTM, Transformer, 어텐션 풀링, 후보 문맥, 목표 문맥, 프롬프트 정보 - 웨이퍼 공정 데이터, 결함 데이터, 학습된 AI 모델, 척 유형, 이탈 범위 - 3차원 영상 데이터, 영상 컨텍스트, 객체 그룹, 객체 클래스별 앵커 박스 - 얼굴 검출 모듈, 파레트 데이터 생성 모듈, 이미지 출력 모듈, 해밍 처리 유닛 또는 메모리 컨트롤러 - NoC, 컨트롤 다이, 해시 다이, ECC 처리 회로, 목적지 ID 매퍼, <span class="evidence-hit ev6" title="also appears in answer">센서</span> 데이터 입력 칩렛, 캐시 메모리, ML 가속 코어 효과 - 신경망 전력 설정을 오류 허용 범위 안에서 유지·조정해 전력 효율을 높일 수 있다. - 양자화·압축·희소성 활용으로 메모리 사용량, 대역폭, 추론 연산량...</td><td>-</td></tr>
+</tbody></table>
+<div class='answer-evidence'>
+<h4>Answer with node evidence underline</h4>
+<div class='evidence-legend'><span class='evidence-chip'><span class='evidence-hit ev2'>#234</span></span><span class='evidence-chip'><span class='evidence-hit ev1'>#208</span></span></div>
+<p class='answer-text'><span class="evidence-hit ev2" title="#234">센서</span> 데이터 <span class="evidence-hit ev2" title="#234">분석</span> 후 생성되는 이벤트의 <span class="evidence-hit ev1" title="#208">목적은</span> <span class="evidence-hit ev2" title="#234">분석</span> 결과에 <span class="evidence-hit ev2" title="#234">따라</span> <span class="evidence-hit ev1" title="#208">실행할</span> <span class="evidence-hit ev1" title="#208">동작과</span> <span class="evidence-hit ev2" title="#234">대응</span> AI <span class="evidence-hit ev1" title="#208">모델을</span> <span class="evidence-hit ev2" title="#234">결정하고</span>, 그 AI <span class="evidence-hit ev1" title="#208">모델을</span> <span class="evidence-hit ev1" title="#208">이용해</span> <span class="evidence-hit ev2" title="#234">센서</span> 데이터를 분류하기 위한 것입니다.</p>
+<p class='small'>위 node table의 형광펜은 retrieved source의 retrieval/evidence cue를 표시합니다. Answer의 형광 밑줄은 그중 실제 답변 문장에 반영된 표현을 같은 node 색으로 연결한 것입니다.</p>
+</div>
+
+</div>
+<div class='note small'><strong>Reading guide.</strong> 이 compact print는 결론과 대표 근거만 담습니다. 특정 QA의 source path, node text, full answer, judge explanation은 <code>report.html</code>과 <code>tree_visualization.html</code>에서 확인하세요.</div>
+<p class='small'>Generated 2026-05-30T23:26:29 from run patent_raptor_v3_20260530_152153</p>
+</body></html>

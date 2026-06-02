@@ -1,0 +1,13 @@
+﻿child_count,has_hallucination,layer,node_index,severity,unsupported_claims
+8,False,1,210,none,[]
+1,False,1,214,none,[]
+6,False,1,215,none,[]
+6,False,1,217,none,[]
+5,True,1,218,minor,"[""'물리 시뮬레이션 가속 기술'이라는 표현은 child text의 탄화수소 저장소 모델링 설명에서 명시적으로 뒷받침되지 않습니다. child text는 머신러닝으로 역연산자를 근사해 저장소를 시뮬레이션한다고만 하며, 시뮬레이션을 가속한다는 효과나 목적은 직접 언급하지 않습니다.""]"
+5,False,1,222,none,[]
+1,False,2,231,none,[]
+1,False,2,234,none,[]
+1,False,2,236,none,[]
+1,False,2,237,none,[]
+6,False,3,238,none,[]
+3,False,3,239,none,[]

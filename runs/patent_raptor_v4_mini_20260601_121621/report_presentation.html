@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>RAPTOR Patent V4-mini Presentation</title>
+<style>
+@page { size: 13.333in 7.5in; margin: 0; }
+* { box-sizing: border-box; }
+html { background: #0f172a; color: #111827; }
+body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #0f172a; }
+.toolbar { position: sticky; top: 0; z-index: 20; display: flex; justify-content: center; gap: 8px; padding: 10px; background: rgba(15,23,42,.92); }
+.toolbar a, .toolbar button { border: 1px solid rgba(148,163,184,.45); border-radius: 999px; padding: 7px 13px; background: #f8fafc; color: #0f172a; font-weight: 700; text-decoration: none; cursor: pointer; }
+.deck { display: flex; flex-direction: column; gap: 20px; padding: 24px 0 40px; }
+.slide { position: relative; width: min(1280px, calc(100vw - 48px)); aspect-ratio: 16 / 9; margin: 0 auto; overflow: hidden; border-radius: 18px; background: #f8fafc; box-shadow: 0 30px 80px rgba(0,0,0,.35); page-break-after: always; break-after: page; }
+.slide-inner { position: absolute; inset: 0; padding: 48px 58px 42px; display: flex; flex-direction: column; gap: 18px; }
+.slide::before { content: ""; position: absolute; inset: 0 0 auto; height: 10px; background: linear-gradient(90deg, #2563eb, #059669, #d97706); }
+h1, h2, h3, p { margin: 0; }
+h1 { max-width: 950px; font-size: 54px; line-height: 1.05; letter-spacing: 0; }
+h2 { font-size: 36px; line-height: 1.1; letter-spacing: 0; }
+h3 { font-size: 20px; line-height: 1.18; }
+.subtitle { max-width: 980px; color: #475569; font-size: 21px; line-height: 1.42; }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.card { border: 1px solid #cbd5e1; border-radius: 12px; background: #fff; padding: 16px; min-height: 112px; }
+.card strong { display: block; color: #475569; font-size: 15px; }
+.card .value { display: block; margin-top: 6px; color: #0f172a; font-size: 28px; font-weight: 850; }
+table { width: 100%; border-collapse: collapse; background: #fff; font-size: 16px; }
+th, td { border: 1px solid #cbd5e1; padding: 9px 10px; text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+th { background: #e0e7ff; font-weight: 800; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; align-items: start; }
+.note { border-left: 5px solid #2563eb; background: #eff6ff; padding: 14px 16px; color: #1e3a8a; font-size: 18px; line-height: 1.35; }
+.small { color: #64748b; font-size: 14px; line-height: 1.35; }
+.foot { position: absolute; left: 58px; right: 58px; bottom: 22px; display: flex; justify-content: space-between; color: #94a3b8; font-size: 13px; }
+@media print { .toolbar { display: none; } .deck { padding: 0; gap: 0; } .slide { width: 13.333in; height: 7.5in; border-radius: 0; box-shadow: none; } }
+</style>
+</head><body>
+<div class="toolbar"><a href="report_compact_print.html">Compact print</a><a href="report.html">Full report</a><button type="button" onclick="window.print()">Print slides</button></div>
+<main class="deck">
+<section class="slide"><div class="slide-inner"><h1>RAPTOR Patent V4-mini</h1><p class="subtitle">Review-sheet gold answer 기반 pilot reproduction. V3 retrieval/reader 결과를 재사용하고 Answer F1 중심으로 재평가했습니다.</p><div class="foot"><span>RAPTOR Patent</span><span>01</span></div></div></section>
+<section class="slide"><div class="slide-inner">
+<h2>What Changed From V3</h2>
+<div class='note'>V3는 LLM-generated pseudo-gold와 GPT judge 중심이었고, V4-mini는 review sheet의 gold_reference_answer 기준 Answer F1을 메인 지표로 사용합니다.</div><div class='grid'><div class='card'><strong>QA</strong><span class='value'>10</span><span class='small'>global 5, local 5</span></div><div class='card'><strong>Tree</strong><span class='value'>V3 reused</span></div><div class='card'><strong>Main metric</strong><span class='value'>Answer F1</span></div><div class='card'><strong>Accuracy</strong><span class='value'>Aux only</span></div></div>
+<div class="foot"><span>report_presentation.html</span><span>02</span></div>
+</div></section>
+<section class="slide"><div class="slide-inner">
+<h2>Core Metrics</h2>
+<table><thead><tr><th>Method</th><th>Answer F1</th><th>Answer Recall</th><th>Source Recall</th></tr></thead><tbody><tr><td>bm25_without_raptor</td><td>0.250</td><td>0.297</td><td>0.228</td></tr><tr><td>bm25_with_raptor</td><td>0.405</td><td>0.505</td><td>0.980</td></tr><tr><td>dense_bge_m3_without_raptor</td><td>0.430</td><td>0.508</td><td>0.750</td></tr><tr><td>dense_bge_m3_with_raptor</td><td>0.428</td><td>0.535</td><td>1.000</td></tr></tbody></table><p class='small'>Best Answer F1: dense_bge_m3_without_raptor (0.430).</p>
+<div class="foot"><span>report_presentation.html</span><span>03</span></div>
+</div></section>
+<section class="slide"><div class="slide-inner">
+<h2>Global / Local Split</h2>
+<table><thead><tr><th>Type</th><th>Method</th><th>Answer F1</th></tr></thead><tbody><tr><td>global</td><td>bm25_without_raptor</td><td>0.289</td></tr><tr><td>global</td><td>bm25_with_raptor</td><td>0.399</td></tr><tr><td>global</td><td>dense_bge_m3_without_raptor</td><td>0.292</td></tr><tr><td>global</td><td>dense_bge_m3_with_raptor</td><td>0.393</td></tr><tr><td>local</td><td>bm25_without_raptor</td><td>0.211</td></tr><tr><td>local</td><td>bm25_with_raptor</td><td>0.411</td></tr><tr><td>local</td><td>dense_bge_m3_without_raptor</td><td>0.568</td></tr><tr><td>local</td><td>dense_bge_m3_with_raptor</td><td>0.463</td></tr></tbody></table>
+<div class="foot"><span>report_presentation.html</span><span>04</span></div>
+</div></section>
+<section class="slide"><div class="slide-inner">
+<h2>With / Without RAPTOR Delta</h2>
+<table><thead><tr><th>Retriever</th><th>Answer F1 Δ</th><th>Answer Recall Δ</th><th>Source Recall Δ</th></tr></thead><tbody><tr><td>BM25</td><td>+0.155</td><td>+0.207</td><td>+0.752</td></tr><tr><td>Dense BGE-M3</td><td>-0.002</td><td>+0.027</td><td>+0.250</td></tr></tbody></table>
+<div class="foot"><span>report_presentation.html</span><span>05</span></div>
+</div></section>
+<section class="slide"><div class="slide-inner">
+<h2>Interpretation</h2>
+<div class='cols'><div class='note'>V4-mini는 제출용 benchmark가 아니라 재현 확인용 pilot입니다. QA 10개라 통계적 일반화보다 method behavior 확인에 의미가 있습니다.</div><div class='note'>특허 문서는 희귀 전문 용어와 source precision이 중요하므로 BM25와 RAPTOR summary node는 상보적으로 해석해야 합니다.</div></div>
+<div class="foot"><span>report_presentation.html</span><span>06</span></div>
+</div></section>
+</main></body></html>

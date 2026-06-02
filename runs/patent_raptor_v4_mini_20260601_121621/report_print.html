@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<title>RAPTOR Patent V4-mini Report</title>
+<style>
+
+:root {
+  color-scheme: light;
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm 11mm 14mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  background: #ffffff;
+  color: #111827;
+}
+
+body {
+  width: 210mm;
+  max-width: 210mm;
+  margin: 0 auto;
+  padding: 12mm 11mm;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-size: 10.5pt;
+  line-height: 1.45;
+}
+
+.print-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin: -12mm -11mm 10mm;
+  padding: 10px 11mm;
+  border-bottom: 1px solid #d1d5db;
+  background: #ffffff;
+}
+
+.print-toolbar a,
+.print-toolbar button {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #111827;
+  font: inherit;
+  padding: 6px 10px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+h1 {
+  margin: 0 0 7mm;
+  padding-bottom: 4mm;
+  border-bottom: 2px solid #111827;
+  color: #111827;
+  font-size: 22pt;
+  line-height: 1.15;
+}
+
+h2 {
+  break-after: avoid;
+  page-break-after: avoid;
+  margin: 11mm 0 4mm;
+  padding-bottom: 2mm;
+  border-bottom: 1px solid #9ca3af;
+  color: #111827;
+  font-size: 15pt;
+  line-height: 1.2;
+}
+
+h3 {
+  break-after: avoid;
+  page-break-after: avoid;
+  margin: 7mm 0 2mm;
+  color: #111827;
+  font-size: 12pt;
+  line-height: 1.25;
+}
+
+p {
+  margin: 0 0 4mm;
+}
+
+a {
+  color: #1d4ed8;
+}
+
+table {
+  width: 100%;
+  margin: 3mm 0 8mm;
+  border-collapse: collapse;
+  background: #ffffff;
+  font-size: 8.8pt;
+  page-break-inside: auto;
+}
+
+thead {
+  display: table-header-group;
+}
+
+tr {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+th,
+td {
+  border: 1px solid #cbd5e1;
+  padding: 3.2pt 4pt;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+}
+
+th {
+  background: #eef2ff;
+  color: #111827;
+  font-weight: 700;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4mm;
+  margin: 0 0 7mm;
+}
+
+.card,
+.print-note {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
+  padding: 4mm;
+}
+
+.card strong,
+.print-note strong {
+  color: #111827;
+}
+
+.print-note {
+  margin: 0 0 6mm;
+  color: #374151;
+  font-size: 9.2pt;
+}
+
+code,
+pre {
+  border: 1px solid #e5e7eb;
+  border-radius: 3px;
+  background: #f8fafc;
+  color: #111827;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 8.8pt;
+}
+
+code {
+  padding: 1pt 2pt;
+}
+
+pre {
+  padding: 4pt;
+  white-space: pre-wrap;
+}
+
+.small {
+  color: #374151;
+  font-size: 8.3pt;
+  line-height: 1.35;
+}
+
+@media screen {
+  body {
+    margin: 24px auto;
+    box-shadow: 0 8px 36px rgba(15, 23, 42, 0.12);
+  }
+}
+
+@media print {
+  body {
+    width: auto;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  .print-toolbar {
+    display: none !important;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+
+</style>
+</head><body>
+<div class="print-toolbar">
+  <a href="report.html">Screen report</a>
+  <button type="button" onclick="window.print()">Print A4</button>
+</div>
+
+<div class="toolbar"><a href="qa_review_sheet.html">QA review sheet</a><a href="report_compact_print.html">Compact print</a><a href="report_presentation.html">Presentation</a><a href="tree_visualization.html">Tree visualization</a><a href="retrieval_visualization.html">Retrieval visualization</a></div>
+<main class="wrap">
+<h1>RAPTOR Patent Experiment Report<br><span class='subtitle'>V4-mini review-sheet gold answer reproduction</span></h1>
+<p class='subtitle'>V4-mini reuses the V3 RAPTOR tree, retrieval contexts, and reader answers, then recalculates paper-style open-ended Answer F1 against the review sheet gold answers.</p>
+<div class='note'><strong>Limit.</strong> V4-mini는 제출용 benchmark가 아니라 재현 확인용 pilot입니다. QA는 10개(Global 5, Local 5)이며, 객관식 gold option이 없으므로 QuALITY식 Accuracy는 메인 지표로 사용하지 않습니다.</div>
+<section class='grid'>
+<div class='card'><strong>Gold QA</strong><span class='value'>10</span><span class='small'>global=5, local=5</span></div>
+<div class='card'><strong>Best Answer F1</strong><span class='value'>dense_bge_m3_without_raptor</span><span class='small'>0.430</span></div>
+<div class='card'><strong>Review status</strong><span class='value'>accept=10</span></div>
+<div class='card'><strong>Appendix E</strong><span class='value'>1/12</span><span class='small'>V3 audit reused</span></div>
+</section>
+<h2>V4-mini Method</h2>
+<table><tbody>
+<tr><th>Evaluation change</th><td>V3의 LLM pseudo-gold reference를 review sheet의 <code>gold_reference_answer</code>로 고정하고 Answer F1/Recall/Precision을 재계산했습니다.</td></tr>
+<tr><th>Reused artifacts</th><td>V3 sampled patents, RAPTOR tree, retrieval source maps, reader answers, Appendix E audit.</td></tr>
+<tr><th>Main metric</th><td>Open-ended QA에 맞춘 <code>Answer F1</code>. Judge pass rate는 auxiliary로만 표시합니다.</td></tr>
+</tbody></table>
+<h2>Core Metrics</h2>
+<table><thead><tr><th>Method</th><th>Answer F1</th><th>Answer Recall</th><th>Answer Precision</th><th>Source Recall</th><th>Judge pass rate (aux)</th></tr></thead><tbody><tr><td>bm25_without_raptor</td><td>0.250</td><td>0.297</td><td>0.221</td><td>0.228</td><td>0.500</td></tr><tr><td>bm25_with_raptor</td><td>0.405</td><td>0.505</td><td>0.351</td><td>0.980</td><td>0.900</td></tr><tr><td>dense_bge_m3_without_raptor</td><td>0.430</td><td>0.508</td><td>0.381</td><td>0.750</td><td>0.900</td></tr><tr><td>dense_bge_m3_with_raptor</td><td>0.428</td><td>0.535</td><td>0.377</td><td>1.000</td><td>0.800</td></tr></tbody></table>
+<h2>Global / Local Metrics</h2>
+<table><thead><tr><th>Type</th><th>Method</th><th>Answer F1</th><th>Answer Recall</th><th>Answer Precision</th><th>Source Recall</th><th>Judge pass (aux)</th></tr></thead><tbody><tr><td>global</td><td>bm25_without_raptor</td><td>0.289</td><td>0.340</td><td>0.261</td><td>0.257</td><td>0.800</td></tr><tr><td>global</td><td>bm25_with_raptor</td><td>0.399</td><td>0.530</td><td>0.327</td><td>0.960</td><td>1.000</td></tr><tr><td>global</td><td>dense_bge_m3_without_raptor</td><td>0.292</td><td>0.369</td><td>0.246</td><td>0.500</td><td>0.800</td></tr><tr><td>global</td><td>dense_bge_m3_with_raptor</td><td>0.393</td><td>0.511</td><td>0.339</td><td>1.000</td><td>0.800</td></tr><tr><td>local</td><td>bm25_without_raptor</td><td>0.211</td><td>0.255</td><td>0.182</td><td>0.200</td><td>0.200</td></tr><tr><td>local</td><td>bm25_with_raptor</td><td>0.411</td><td>0.480</td><td>0.375</td><td>1.000</td><td>0.800</td></tr><tr><td>local</td><td>dense_bge_m3_without_raptor</td><td>0.568</td><td>0.648</td><td>0.517</td><td>1.000</td><td>1.000</td></tr><tr><td>local</td><td>dense_bge_m3_with_raptor</td><td>0.463</td><td>0.559</td><td>0.415</td><td>1.000</td><td>0.800</td></tr></tbody></table>
+<h2>With/Without RAPTOR Delta</h2>
+<table><thead><tr><th>Retriever</th><th>Without</th><th>With RAPTOR</th><th>Answer F1 Δ</th><th>Answer Recall Δ</th><th>Source Recall Δ</th><th>Judge pass Δ (aux)</th></tr></thead><tbody><tr><td>BM25</td><td>bm25_without_raptor</td><td>bm25_with_raptor</td><td>+0.155</td><td>+0.207</td><td>+0.752</td><td>+0.400</td></tr><tr><td>Dense BGE-M3</td><td>dense_bge_m3_without_raptor</td><td>dense_bge_m3_with_raptor</td><td>-0.002</td><td>+0.027</td><td>+0.250</td><td>-0.100</td></tr></tbody></table>
+<section class='interpretation-section pdf-hide'>
+<h2>Interpretation</h2>
+<table><thead><tr><th>Observation</th><th>Interpretation</th></tr></thead><tbody>
+<tr><td>Review-sheet gold answer 기준</td><td>V4-mini는 V3의 LLM pseudo-gold를 그대로 성능 주장에 쓰지 않고, 검수 가능한 <code>gold_reference_answer</code> 기준으로 Answer F1을 다시 계산합니다. 따라서 V3보다 논문식 open-ended QA 평가에 더 가깝습니다.</td></tr>
+<tr><td>BM25 with RAPTOR 개선</td><td>BM25는 leaf-only보다 full-tree 검색에서 Answer F1과 Source Recall이 함께 상승했습니다. 특허 전문 용어 exact match가 summary node까지 확장되면서 reader가 종합 답변을 만들 근거를 더 많이 받았기 때문입니다.</td></tr>
+<tr><td>Dense BGE-M3의 global/local 차이</td><td>Dense with RAPTOR는 Source Recall을 높였지만, Local QA에서는 leaf-only dense 검색이 더 직접적인 원문 근거를 제공해 Answer F1이 더 높았습니다. 전체 평균만 보면 이 상반된 효과가 가려집니다.</td></tr>
+<tr><td>Accuracy 해석 제한</td><td>객관식 gold option이 없으므로 QuALITY식 Accuracy는 메인 지표로 쓰지 않았습니다. Judge pass rate는 답변이 reference와 context에 충분히 맞는지 보는 보조 신호입니다.</td></tr>
+</tbody></table>
+</section>
+<h2>Why BM25 Remains Competitive on Patent Data</h2>
+<p>특허 문서는 기술 용어와 구성요소 명칭이 정밀하게 유지되는 문서 유형입니다. 소설이나 일반 서술형 문서와 달리, 단어 하나가 특정 구조나 기능을 가리키는 식별자처럼 작동하므로 BM25의 lexical matching이 강한 baseline이 됩니다.</p>
+<table><thead><tr><th>Patent text property</th><th>BM25 advantage</th></tr></thead><tbody>
+<tr><td>전문 용어의 희소성</td><td>GEMM, DDR, PIM/CIM, NoC, 양자화, 정규화 회로처럼 corpus 전체에서 드문 용어는 IDF가 커져 검색 점수를 강하게 끌어올립니다.</td></tr>
+<tr><td>구성요소 명칭의 반복</td><td>특허 요약은 핵심 부품과 동작을 반복 설명하므로 term frequency가 높아지고, 같은 용어가 질문에 있으면 BM25가 뚜렷하게 반응합니다.</td></tr>
+<tr><td>표현의 정밀성</td><td>기술 용어는 자유롭게 치환되기보다 원문 표현이 유지됩니다. 그래서 dense similarity보다 exact match가 더 직접적인 신호가 될 수 있습니다.</td></tr>
+<tr><td>RAPTOR와의 상보성</td><td>BM25는 precise lexical source hit에 강하고, RAPTOR summary node는 여러 patent 근거를 묶어 reader가 답변을 종합하도록 돕습니다.</td></tr>
+</tbody></table>
+<p>따라서 V4-mini 결과는 RAPTOR가 BM25를 항상 압도했다기보다, 특허 데이터에서는 BM25의 lexical retrieval과 RAPTOR의 summary-tree evidence가 상보적으로 작동한다고 해석하는 것이 적절합니다.</p>
+<h2>Gold QA Summary</h2>
+<table><thead><tr><th>QA</th><th>Type</th><th>Question</th><th>Best method by F1</th><th>Best F1</th><th>Gold reference answer</th></tr></thead><tbody>
+<tr><td>0</td><td>global</td><td>신경망 시스템의 전력 효율을 높이기 위해 전압·클록 제어, 양자화, PIM/CIM 연산, 칩렛/NoC 스케줄링 기술을 함께 적용하면 어떤 종합 효과를 기대할 수 있는가?</td><td>dense_bge_m3_with_raptor</td><td>0.392</td><td>신경망 실행 결과의 오류율을 비교해 허용 가능한 범위 안에서는 저전력 설정을 유지하고, 오류가 커지면 전압이나 클록을 조정할 수 있다. 여기에 파라미터 양자화와 모델 압축을 적용하면 모델 크기, 메모리 사용량, 연산량이 줄어든다. PIM/CIM 구조와 DMA·메모리 요청 스케줄링은 CPU와 메모리 사이 데이터 이동을 줄이고, 칩렛 또는…</td></tr>
+<tr><td>1</td><td>global</td><td>검색·질의응답 시스템에서 지식 그래프, 웹 콘텐츠 기반 답변 생성, 언어모델 문맥 압축, 이미지 코드 비교 기술을 결합하면 어떤 방식으로 응답 생성 효율을 높일 수 있는가?</td><td>bm25_with_raptor</td><td>0.281</td><td>검색 질의와 객체 간 관련도 점수를 계산해 검색 결과를 순위화하고, 자연어 입력에서 엔티티와 엣지를 생성해 지식 그래프를 구축할 수 있다. 지식 그래프 노드는 이진 임베딩으로 변환되어 질의 관련 노드 선택에 활용되고, 웹페이지 콘텐츠는 딥러닝 모델을 통해 리스트형 답변 생성에 사용된다. 후보 문맥 중 목표 문맥을 선택·압축하면 언어모델…</td></tr>
+<tr><td>2</td><td>global</td><td>웨이퍼 공정 최적화 기술과 반도체 미세 구조·패키지 방열 기술은 반도체 제조 품질 개선에서 어떻게 상호 보완될 수 있는가?</td><td>dense_bge_m3_with_raptor</td><td>0.437</td><td>웨이퍼 공정 기술은 공정 수율 데이터와 결함 데이터를 이용해 대상 웨이퍼의 이탈 범위를 판단하고, AI 모델로 결함에 대응되는 척 유형을 결정해 최적 위치를 산출한다. 반도체 미세 구조 기술은 트렌치, 리세스, 절연막, 소자 분리층, 확산 차단 구조를 이용해 활성 영역과 핀·필러 등을 정밀하게 분리하고 산화막 손실을 줄인다. 패키지 측면…</td></tr>
+<tr><td>3</td><td>global</td><td>3차원 객체 인지, 이미지 분류, 동일 인물 이미지 검색 기술을 함께 고려할 때 비전 AI 시스템의 정확도와 처리 속도를 높이는 공통 전략은 무엇인가?</td><td>bm25_with_raptor</td><td>0.566</td><td>3차원 객체 인지에서는 영상 컨텍스트를 추정한 뒤 해당 컨텍스트에 맞는 객체 그룹을 선택하고, 객체 클래스별 앵커 박스를 적용해 학습한다. 이미지 분류에서는 라벨링 데이터 일부로 프록시 모델을 학습하고 샘플링된 비라벨링 데이터를 활용해 학습 효율을 높인다. 동일 인물 이미지 검색은 얼굴 검출과 파레트 데이터를 이용해 입력 데이터와 같은…</td></tr>
+<tr><td>4</td><td>global</td><td>AI 가속기와 SoC/NoC 기반 집적회로에서 메모리 접근 제어, ECC 처리, 외부 트래픽 제어, DMA 및 PE 배열 기술을 함께 적용하는 목적은 무엇인가?</td><td>bm25_with_raptor</td><td>0.400</td><td>AI 가속기에서는 VPU, SIMD, DMA 시퀀서, GEMM·컨볼루션 버퍼링, PE 배열, 시스톨릭 어레이를 이용해 신경망 연산을 병렬화하고 데이터 이동을 효율화한다. PIM/CIM 및 메모리 요청 스케줄링은 메모리 내부 또는 인접 회로에서 연산을 수행해 외부 메모리 접근을 줄인다. SoC/NoC 기술은 외부 장치의 트래픽 정책 위반을…</td></tr>
+<tr><td>5</td><td>local</td><td>15-615713 특허에서 온라인 소셜 네트워크 검색 결과의 순위는 어떤 기준으로 결정되나요?</td><td>dense_bge_m3_without_raptor</td><td>0.583</td><td>각 식별된 객체에 대해 3차원 텐서를 구성하고, 그 텐서를 기반으로 관련성 점수를 계산한 뒤, 객체들을 각각의 관련성 점수에 따라 순위화합니다.</td></tr>
+<tr><td>6</td><td>local</td><td>16-009456 특허에서 1차 신경망의 양자화 파라미터는 무엇이 생성하나요?</td><td>dense_bge_m3_without_raptor</td><td>0.545</td><td>2차 신경망 로직 회로가 1차 신경망 로직 회로를 위해 양자화 파라미터를 생성하며, 이 파라미터는 1차 신경망의 텐서들에 출력됩니다.</td></tr>
+<tr><td>7</td><td>local</td><td>16-245406 특허의 벡터 연산 회로에서 활성화 회로는 어떤 역할을 하나요?</td><td>bm25_with_raptor</td><td>0.710</td><td>활성화 회로는 누적값 벡터를 수신하고 각 누적값에 함수를 적용하여 활성화값 벡터를 생성합니다.</td></tr>
+<tr><td>8</td><td>local</td><td>17-070786 특허에서 센서 데이터 분석 후 생성되는 이벤트의 목적은 무엇인가요?</td><td>dense_bge_m3_with_raptor</td><td>0.340</td><td>센서 데이터 분석을 기반으로 구성 데이터가 결정되고, 각 동작에 대해 이벤트가 생성되어 해당 동작과 연관된 AI 모델의 실행을 트리거합니다.</td></tr>
+<tr><td>9</td><td>local</td><td>17-289227 특허에서 학습된 LSTM 신경망을 양자화할 때 각 게이트에 대해 어떤 행렬들이 목표 고정 비트폭으로 양자화되나요?</td><td>bm25_without_raptor</td><td>0.684</td><td>각 게이트에 대해 입력 가중치 행렬의 요소들과 순환 가중치 행렬의 요소들이 목표 고정 비트폭으로 양자화됩니다.</td></tr>
+</tbody></table>
+<h2>Appendix E Summary</h2>
+<table><tbody>
+<tr><th>Audited summary nodes</th><td>12</td></tr>
+<tr><th>Unsupported claim detected</th><td>1 / 12 (0.083)</td></tr>
+<tr><th>Severity mix</th><td>minor=1, none=11</td></tr>
+<tr><th>Propagation</th><td>본 audit 범위에서는 환각 증상이 상위 노드로 전파되지 않았습니다.</td></tr>
+<tr><th>V4 note</th><td>V4-mini에서는 tree를 재생성하지 않았으므로 Appendix E는 V3 audit 결과를 재사용했습니다.</td></tr>
+</tbody></table>
+<h2>Version Notes</h2>
+<table><tbody>
+<tr><th>V1</th><td>Traverse Tree vs Collapsed Tree baseline.</td></tr>
+<tr><th>V2</th><td>Global/Local QA + DPR baseline.</td></tr>
+<tr><th>V3</th><td>with/without RAPTOR + BGE-M3 + LLM pseudo-gold.</td></tr>
+<tr><th>V4-mini</th><td>V3 QA 10개를 review sheet gold answer로 고정하고 Answer F1 중심 재평가.</td></tr>
+</tbody></table>
+</main></body></html>

@@ -1,0 +1,3 @@
+﻿source_node,source_layer,source_severity,ancestor_node,ancestor_layer,distance,propagated,matching_claims,explanation
+218,1,minor,233,2,1,False,[],"상위 요약은 신경망·그래픽·머신러닝 작업 가속과 분산 학습 효율화를 말하지만, 탄화수소 저장소/물리 시뮬레이션을 가속한다는 동일한 unsupported claim은 반복하지 않습니다."
+218,1,minor,238,3,2,False,[],"상위 요약의 가속 언급은 AI·그래픽·데이터베이스·머신러닝 작업에 한정되어 있으며, 물리 시뮬레이션 가속 또는 저장소 시뮬레이션 가속 주장은 포함되지 않습니다."

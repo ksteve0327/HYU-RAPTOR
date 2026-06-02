@@ -375,6 +375,20 @@ th {
   background: #fff;
   white-space: nowrap;
 }
+.rank-chip,
+.source-chip {
+  display: inline-block;
+  padding: .4pt 3.5pt;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  font-weight: 700;
+  white-space: nowrap;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.evidence-rule {
+  margin: 1mm 0 2mm;
+}
 .evidence-hit {
   border-radius: 2px;
   padding: 0 .5px;
@@ -389,6 +403,14 @@ th {
 .ev6 { background: linear-gradient(transparent 55%, rgba(20, 184, 166, .35) 0); }
 .ev7 { background: linear-gradient(transparent 55%, rgba(100, 116, 139, .28) 0); }
 .ev8 { background: linear-gradient(transparent 55%, rgba(132, 204, 22, .35) 0); }
+.rank-chip.ev1, .source-chip.ev1 { background: rgba(245, 158, 11, .22); }
+.rank-chip.ev2, .source-chip.ev2 { background: rgba(16, 185, 129, .20); }
+.rank-chip.ev3, .source-chip.ev3 { background: rgba(59, 130, 246, .18); }
+.rank-chip.ev4, .source-chip.ev4 { background: rgba(168, 85, 247, .18); }
+.rank-chip.ev5, .source-chip.ev5 { background: rgba(239, 68, 68, .17); }
+.rank-chip.ev6, .source-chip.ev6 { background: rgba(20, 184, 166, .18); }
+.rank-chip.ev7, .source-chip.ev7 { background: rgba(100, 116, 139, .16); }
+.rank-chip.ev8, .source-chip.ev8 { background: rgba(132, 204, 22, .20); }
 .metric-guide-table {
   margin-top: -2mm;
   margin-bottom: 5mm;
@@ -1332,6 +1354,49 @@ def source_node_rows(method_data, nodes, source_limit=8):
     return source_nodes
 
 
+def retrieval_rank(source, fallback_index):
+    try:
+        rank = int(float(str(source.get("rank", "")).strip()))
+    except (TypeError, ValueError):
+        rank = fallback_index
+    if rank < 1:
+        rank = fallback_index
+    return min(rank, 8)
+
+
+def evidence_class_for_source(source, fallback_index):
+    return f"ev{retrieval_rank(source, fallback_index)}"
+
+
+def evidence_source_label(source, node, fallback_index):
+    rank = source.get("rank") or fallback_index
+    return f"r{rank} #{node.get('index')}"
+
+
+def evidence_rank_legend():
+    labels = [
+        ("ev1", "r1"),
+        ("ev2", "r2"),
+        ("ev3", "r3"),
+        ("ev4", "r4"),
+        ("ev5", "r5"),
+        ("ev6", "r6"),
+        ("ev7", "r7"),
+        ("ev8", "r8"),
+    ]
+    chips = "".join(
+        f"<span class='evidence-chip'><span class='rank-chip {css_class}'>{label}</span></span>"
+        for css_class, label in labels
+    )
+    return (
+        "<div class='evidence-rule note small'>"
+        "<strong>Highlight rule.</strong> 색상은 각 QA 블록 안의 retrieval rank 기준입니다. "
+        "같은 색의 Rank/Node/Meaning/Answer 표시는 같은 retrieved source에서 온 근거를 뜻합니다. "
+        f"<div class='evidence-legend'>{chips}</div>"
+        "</div>"
+    )
+
+
 def render_node_meaning_table(method_data, nodes, source_limit=8, question=""):
     source_nodes = source_node_rows(method_data, nodes, source_limit)
     if not source_nodes:
@@ -1343,15 +1408,15 @@ def render_node_meaning_table(method_data, nodes, source_limit=8, question=""):
         "<table class='node-meaning-table'><thead><tr><th>Rank</th><th>Node</th><th>Layer</th><th>Meaning</th><th>Patent IDs covered</th></tr></thead><tbody>"
     ]
     for index, (source, node) in enumerate(source_nodes, start=1):
-        css_class = f"ev{min(index, 8)}"
+        css_class = evidence_class_for_source(source, index)
         node_key = str(node.get("index"))
         layer_value = node.get("layer", "")
         if layer_value is None:
             layer_value = ""
         rows.append(
-            "<tr><td>{}</td><td>#{}</td><td>L{}</td><td>{}</td><td>{}</td></tr>".format(
-                html_escape(source.get("rank", "")),
-                html_escape(node.get("index", "")),
+            "<tr><td>{}</td><td>{}</td><td>L{}</td><td>{}</td><td>{}</td></tr>".format(
+                f"<span class='rank-chip {css_class}'>r{html_escape(source.get('rank', index))}</span>",
+                f"<span class='source-chip {css_class}'>#{html_escape(node.get('index', ''))}</span>",
                 html.escape(str(layer_value)),
                 highlighted_meaning_html(node, css_class, terms_by_node.get(node_key, [])),
                 html_escape(descendant_patent_label(node)),
@@ -1549,9 +1614,9 @@ def build_evidence_assignments(answer, source_nodes, question="", max_terms_tota
     class_to_node = {}
     terms_by_node = defaultdict(list)
     for index, (source, node) in enumerate(source_nodes, start=1):
-        css_class = f"ev{min(index, 8)}"
+        css_class = evidence_class_for_source(source, index)
         node_key = str(node.get("index"))
-        node_label = f"#{node.get('index')}"
+        node_label = evidence_source_label(source, node, index)
         for term in evidence_terms(answer, node, max_terms=max_terms_per_node * 2):
             key = term.lower()
             if key in term_to_class:
@@ -1627,7 +1692,7 @@ def render_answer_evidence(
     nodes,
     source_limit=8,
     title="Answer with node evidence underline",
-    note="위 node table의 형광펜은 retrieved source의 retrieval/evidence cue를 표시합니다. Answer의 형광 밑줄은 그중 실제 답변 문장에 반영된 표현을 같은 node 색으로 연결한 것입니다.",
+    note="색상 기준은 해당 QA 안의 retrieval rank입니다. Table과 Answer에서 같은 색은 같은 retrieved source를 뜻하며, 형광펜은 답변에 반영된 source 표현 또는 개념상 같은 표현을 표시합니다.",
 ):
     source_nodes = source_node_rows(method_data, nodes, source_limit=source_limit)
     answer = method_data.get("answer", "")
@@ -1806,7 +1871,7 @@ def render_without_raptor_comparison(case, qa_item, nodes, answer_eval):
     ]
     return "\n".join(
         [
-            "<div class='without-comparison'>",
+            f"<div class='without-comparison method-{html_escape(without_method_name)}'>",
             "<div class='without-visual-head'>",
             "<h4>Same query without RAPTOR</h4>",
             f"<div class='tree-meta'>{''.join(f'<span class=\"tag\">{html_escape(item)}</span>' for item in meta)}</div>",
@@ -1827,7 +1892,7 @@ def render_without_raptor_comparison(case, qa_item, nodes, answer_eval):
                 nodes,
                 source_limit=4,
                 title="Without RAPTOR answer with leaf evidence underline",
-                note="위 leaf table의 모든 행은 retrieved leaf입니다. Table 형광펜은 retrieval/evidence cue이고, Answer 형광 밑줄은 실제 답변 문장에 반영된 표현을 같은 leaf 색으로 연결한 것입니다. with RAPTOR와 달리 상위 summary node 없이 leaf patent만 근거로 사용했습니다.",
+                note="색상 기준은 해당 QA 안의 retrieval rank입니다. 같은 색의 leaf table 행과 Answer 형광 밑줄은 같은 retrieved leaf를 뜻합니다. with RAPTOR와 달리 상위 summary node 없이 leaf patent만 근거로 사용했습니다.",
             ),
             "</div>",
         ]
@@ -1919,9 +1984,12 @@ def render_visualization_overview(source_map, answer_eval):
         return ""
     return "\n".join(
         [
+            "<section class='visualization-overview'>",
             "<h2>Visualization</h2>",
             "<p class='small'>With RAPTOR는 source node와 ancestor path를 mini-tree로, without RAPTOR는 같은 질문의 ranked leaf retrieval strip으로 표시했습니다. 원 안의 숫자는 retrieval rank입니다.</p>",
+            evidence_rank_legend(),
             render_visualization_verdict_summary(selected_cases, source_map, answer_eval),
+            "</section>",
         ]
     )
 
